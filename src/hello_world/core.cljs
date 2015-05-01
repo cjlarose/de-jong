@@ -16,3 +16,22 @@
   (fn [[x y]]
     [(- (js/Math.sin (* a y)) (js/Math.cos (* b x)))
      (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))]))
+
+;; to get a lazy seq of points use
+;; (iterate (hello/de-jong-ifs 0.97 -1.9 1.38 -1.5) [0 0])
+
+(defn render-ifs [ifs num-points]
+  (let [points  (take num-points (iterate ifs [0 0])),
+        canvas  (.getElementById js/document "canvas")
+        context (.getContext canvas "2d")
+        w       (.-width canvas)
+        h       (.-height canvas)]
+    (.clearRect context 0 0 w h)
+    (set! (.-fillStyle context) "green")
+    (doseq [[x y] points] (.fillRect context  (+ (/ w 2) (* x (/ w 4))) (+ (/ h 2) (* y (/ h 4))) 1 1))))
+
+;; (def my-ifs (hello/de-jong-ifs 0.97 -1.9 1.38 -1.5))
+;; (hello/render-ifs my-ifs 10)
+
+(def my-ifs (de-jong-ifs 0.97 -1.9 1.38 -1.5))
+(render-ifs my-ifs 1e5)
