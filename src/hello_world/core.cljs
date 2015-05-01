@@ -29,8 +29,9 @@
     (.clearRect context 0 0 w h)
     (.save context)
     (.translate context (/ w 2) (/ h 2))
+    (.scale context (/ w 4) (/ h 4))
     (set! (.-fillStyle context) "green")
-    (doseq [[x y] points] (.fillRect context  (* x (/ w 4)) (* y (/ h 4)) 1 1))
+    (doseq [[x y] points] (.fillRect context x y 1e-3 1e-3))
     (.restore context)))
 
 ;; (def my-ifs (hello/de-jong-ifs 0.97 -1.9 1.38 -1.5))
