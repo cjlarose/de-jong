@@ -20,19 +20,27 @@
 ;; to get a lazy seq of points use
 ;; (iterate (hello/de-jong-ifs 0.97 -1.9 1.38 -1.5) [0 0])
 
-(defn render-ifs [ifs num-points]
-  (let [points  (take num-points (iterate ifs [0 0])),
-        canvas  (.getElementById js/document "canvas")
+(defn get-context []
+  (let [canvas  (.getElementById js/document "canvas")
         context (.getContext canvas "2d")
         w       (.-width canvas)
         h       (.-height canvas)]
-    (.clearRect context 0 0 w h)
-    (.save context)
     (.translate context (/ w 2) (/ h 2))
     (.scale context (/ w 4) (/ h 4))
     (set! (.-fillStyle context) "green")
-    (doseq [[x y] points] (.fillRect context x y 1e-3 1e-3))
-    (.restore context)))
+    context))
+
+(defonce my-context (do (get-context)))
+
+(defn render-ifs [ifs num-points]
+  (let [all-points  (take num-points (iterate ifs [0 0])),
+        draw-points (fn self [points]
+                      (if (not (empty? points))
+                        (do
+                          (doseq [[x y] (first points)] (.fillRect my-context x y 1e-3 1e-3))
+                          (.requestAnimationFrame js/window (fn [] (self (rest points)))))))]
+    (.clearRect my-context -2 -2 4 4)
+    (.requestAnimationFrame js/window (fn [] (draw-points (partition 1e3 all-points))))))
 
 ;; (def my-ifs (hello/de-jong-ifs 0.97 -1.9 1.38 -1.5))
 ;; (hello/render-ifs my-ifs 10)
