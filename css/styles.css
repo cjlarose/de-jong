@@ -1,0 +1,11 @@
+body {
+  background-color: #171717;
+  margin: 0;
+  padding: 0;
+}
+
+#wrap {
+  padding: 20px;
+  margin: 0 auto;
+  text-align: center;
+}
