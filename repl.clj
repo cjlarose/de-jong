@@ -3,7 +3,7 @@
 (require 'cljs.repl.browser)
 
 (cljs.closure/build "src"
-  {:main 'hello-world.core
+  {:main 'de-jong.core
    :output-to "out/main.js"
    :verbose true})
 

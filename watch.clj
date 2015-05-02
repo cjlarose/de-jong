@@ -1,5 +1,5 @@
 (require 'cljs.closure)
 
 (cljs.closure/watch "src"
-  {:main 'hello-world.core
+  {:main 'de-jong.core
    :output-to "out/main.js"})

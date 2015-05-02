@@ -1,4 +1,4 @@
-(ns hello-world.core
+(ns de-jong.core
   (:require [clojure.browser.repl :as repl]))
 
 (defonce conn
