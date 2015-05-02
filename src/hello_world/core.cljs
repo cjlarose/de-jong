@@ -6,11 +6,6 @@
 
 (enable-console-print!)
 
-(println "Hello world!")
-
-(defn foo [a b]
-  (* a b))
-
 (defn de-jong-ifs [a b c d]
   {:pre [(every? #(and (<= % js/Math.PI) (>= % (- js/Math.PI))) [a b c d])]}
   (fn [[x y]]
@@ -68,8 +63,4 @@
             image-data))]
     (.putImageData ctx (fill-image-data all-points) 0 0)))
 
-;; (def my-ifs (hello/de-jong-ifs 0.97 -1.9 1.38 -1.5))
-;; (hello/render-ifs my-ifs 10)
-
-(def my-ifs (de-jong-ifs 0.97 -1.9 1.38 -1.5))
-(render-ifs my-ifs 1e5)
+(render-ifs (de-jong-ifs 0.97 -1.9 1.38 -1.5) 1e5)
