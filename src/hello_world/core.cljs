@@ -43,12 +43,12 @@
     (aset data (+ 2 idx) b)
     (aset data (+ 3 idx) a)))
 
-(defn blend-colors [mode [rx gx bx ax] [ry gy by ay]]
-  (let [apply-mode (fn [a b] (.floor js/Math (* 255 (mode (/ a 255) (/ b 255)))))]
-    [(apply-mode rx ry) (apply-mode gx gy) (apply-mode bx by) (apply-mode ax ay)]))
-
-(defn screen [a b]
-  (- 1 (* (- 1 a) (- 1 b))))
+(defn alpha-blend-colors [[rx gx bx _] [ry gy by ay]]
+  (let [fg-alpha (/ ay 255)]
+    [(+ (* ry fg-alpha) (* rx (- 1 fg-alpha)))
+     (+ (* gy fg-alpha) (* gx (- 1 fg-alpha)))
+     (+ (* by fg-alpha) (* bx (- 1 fg-alpha)))
+     255]))
 
 (defn render-ifs [ifs num-points]
   (let [all-points  (take num-points (iterate ifs [0 0]))
@@ -60,7 +60,7 @@
                             (set-color
                               data-with-size
                               pos
-                              (blend-colors screen (get-color data-with-size pos) color)))]
+                              (alpha-blend-colors (get-color data-with-size pos) color)))]
             (doseq [[x y] points]
               (add-color [(* (+ x 2) 200) (* (+ y 2) 200)] [0 192 0 64]))
             image-data))]
