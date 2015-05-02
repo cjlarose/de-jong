@@ -22,9 +22,6 @@
         context (.getContext canvas "2d")
         w       (.-width canvas)
         h       (.-height canvas)]
-    (.translate context (/ w 2) (/ h 2))
-    (.scale context (/ w 4) (/ h 4))
-    (set! (.-fillStyle context) "rgba(0,192,0,0.25)")
     { :size [w, h] :context context }))
 
 (defonce my-context (do (get-context)))
@@ -60,7 +57,6 @@
                            (doseq [[x y] points]
                              ;;(println (str "setting " (* (+ x 2) 200) ", " (* (+ y 2) 200)))
                              (add-color [(* (+ x 2) 200) (* (+ y 2) 200)] [0 192 0 64])))]
-    (.clearRect ctx -2 -2 4 4)
     (fill-image-data all-points)
     (.putImageData ctx image-data 0 0)))
 
