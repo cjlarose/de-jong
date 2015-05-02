@@ -27,7 +27,7 @@
         h       (.-height canvas)]
     (.translate context (/ w 2) (/ h 2))
     (.scale context (/ w 4) (/ h 4))
-    (set! (.-fillStyle context) "green")
+    (set! (.-fillStyle context) "rgba(0,192,0,0.25)")
     context))
 
 (defonce my-context (do (get-context)))
@@ -40,10 +40,10 @@
                           (doseq [[x y] (first points)] (.fillRect my-context x y 1e-3 1e-3))
                           (.requestAnimationFrame js/window (fn [] (self (rest points)))))))]
     (.clearRect my-context -2 -2 4 4)
-    (.requestAnimationFrame js/window (fn [] (draw-points (partition 1e3 all-points))))))
+    (.requestAnimationFrame js/window (fn [] (draw-points (partition 1e4 all-points))))))
 
 ;; (def my-ifs (hello/de-jong-ifs 0.97 -1.9 1.38 -1.5))
 ;; (hello/render-ifs my-ifs 10)
 
 (def my-ifs (de-jong-ifs 0.97 -1.9 1.38 -1.5))
-(render-ifs my-ifs 1e5)
+(render-ifs my-ifs 1e6)
