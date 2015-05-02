@@ -50,6 +50,8 @@
      (+ (* by fg-alpha) (* bx (- 1 fg-alpha)))
      255]))
 
+(def fill-color [0 192 0 64])
+
 (defn render-ifs [ifs num-points]
   (let [all-points  (take num-points (iterate ifs [0 0]))
         {[w h] :size ctx :context} my-context
@@ -62,7 +64,7 @@
                               pos
                               (alpha-blend-colors (get-color data-with-size pos) color)))]
             (doseq [[x y] points]
-              (add-color [(* (+ x 2) 200) (* (+ y 2) 200)] [0 192 0 64]))
+              (add-color [(* (+ x 2) 200) (* (+ y 2) 200)] fill-color))
             image-data))]
     (.putImageData ctx (fill-image-data all-points) 0 0)))
 
