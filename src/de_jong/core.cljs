@@ -10,7 +10,7 @@
 
 (defonce app-state (atom {:ifs-params {:a 0.97 :b -1.9 :c 1.38 :d -1.5}}))
 
-(defn param-picker [{label :label value :value} owner]
+(defn param-picker [{:keys [label value onChange]} owner]
   (reify
     om/IRender
     (render [this]
@@ -20,21 +20,36 @@
           label
           (dom/input #js {:type "number"
                           :name (str "param-" label)
-                          :min "-2"
-                          :max "-2"
-                          :step "0.1"
-                          :value value}))))))
+                          :min -3.14
+                          :max 3.14
+                          :step "0.01"
+                          :value value
+                          :onChange (fn [e] (onChange (.-value (.-target e))))}))))))
+
+(defn handle-param-change [owner k v]
+  (om/set-state! owner k v)
+  (println (str k " is now set to " v)))
+
+(defn handle-params-submit [state e]
+  (.preventDefault e)
+  (println state))
 
 (defn params-picker [params owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [_]
+      params)
+    om/IRenderState
+    (render-state [this state]
+      (println state)
       (dom/section #js {:id "params-picker"}
-        (dom/ul nil
-          (om/build param-picker {:label "α" :value (:a params)})
-          (om/build param-picker {:label "β" :value (:b params)})
-          (om/build param-picker {:label "γ" :value (:c params)})
-          (om/build param-picker {:label "δ" :value (:d params)}))))))
+        (dom/form #js {:onSubmit (partial handle-params-submit state)}
+          (dom/ul nil
+            (om/build param-picker {:label "α" :value (:a state) :onChange (partial handle-param-change owner :a)})
+            (om/build param-picker {:label "β" :value (:b state) :onChange (partial handle-param-change owner :b)})
+            (om/build param-picker {:label "γ" :value (:c state) :onChange (partial handle-param-change owner :c)})
+            (om/build param-picker {:label "δ" :value (:d state) :onChange (partial handle-param-change owner :d)}))
+          (dom/input #js {:type "submit" :value "Draw"}))))))
 
 (defn de-jong-app [data owner]
   (reify
