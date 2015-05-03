@@ -16,7 +16,7 @@
                           :max 3.14
                           :step "0.01"
                           :value value
-                          :onChange (fn [e] (onChange (.-value (.-target e))))}))))))
+                          :onChange (fn [e] (onChange (.parseFloat js/Number (.. e -target -value))))}))))))
 
 (defn handle-param-change [owner k v]
   (om/set-state! owner k v)
