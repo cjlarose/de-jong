@@ -8,13 +8,43 @@
 
 (enable-console-print!)
 
-(defn widget [data owner]
+(defonce app-state (atom {:ifs-params {:a 0.97 :b -1.9 :c 1.38 :d -1.5}}))
+
+(defn param-picker [{label :label value :value} owner]
   (reify
     om/IRender
     (render [this]
-      (dom/canvas #js {:id "canvas" :width 800 :height 800}))))
+      (dom/li nil
+        (dom/label
+          #js {:htmlFor (str "param-" label)}
+          label
+          (dom/input #js {:type "number"
+                          :name (str "param-" label)
+                          :min "-2"
+                          :max "-2"
+                          :step "0.1"
+                          :value value}))))))
 
-(om/root widget {:text "Hello world!"}
+(defn params-picker [params owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/section #js {:id "params-picker"}
+        (dom/ul nil
+          (om/build param-picker {:label "a" :value (:a params)})
+          (om/build param-picker {:label "b" :value (:b params)})
+          (om/build param-picker {:label "c" :value (:c params)})
+          (om/build param-picker {:label "d" :value (:d params)}))))))
+
+(defn de-jong-app [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div nil
+        (om/build params-picker (:ifs-params data))
+        (dom/canvas #js {:id "canvas" :width 800 :height 800})))))
+
+(om/root de-jong-app app-state
   {:target (. js/document (getElementById "application"))})
 
 (defn de-jong-ifs [a b c d]
