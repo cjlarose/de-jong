@@ -31,10 +31,10 @@
     (render [this]
       (dom/section #js {:id "params-picker"}
         (dom/ul nil
-          (om/build param-picker {:label "a" :value (:a params)})
-          (om/build param-picker {:label "b" :value (:b params)})
-          (om/build param-picker {:label "c" :value (:c params)})
-          (om/build param-picker {:label "d" :value (:d params)}))))))
+          (om/build param-picker {:label "α" :value (:a params)})
+          (om/build param-picker {:label "β" :value (:b params)})
+          (om/build param-picker {:label "γ" :value (:c params)})
+          (om/build param-picker {:label "δ" :value (:d params)}))))))
 
 (defn de-jong-app [data owner]
   (reify
