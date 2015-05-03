@@ -1,4 +1,4 @@
-(ns de-jong.core
+(ns ^:figwheel-always de-jong.core
   (:require [clojure.browser.repl :as repl]
             [om.core :as om]
             [om.dom :as dom]
