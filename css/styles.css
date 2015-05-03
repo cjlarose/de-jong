@@ -1,0 +1,32 @@
+body {
+    background-color: #171717;
+    margin: 0;
+    padding: 0;
+}
+
+#application {
+    padding: 40px;
+}
+
+#ifs-viewer {
+    width: 800px;
+    margin: 0 auto;
+}
+
+#params-picker {
+    background-color: #fff;
+    padding: 20px;
+    float: left;
+    font-size: 24px;
+}
+
+#params-picker ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#params-picker label span {
+    display: inline-block;
+    width: 2em;
+}
