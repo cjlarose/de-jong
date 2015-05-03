@@ -15,32 +15,11 @@
   (println "yo")
   (println params))
 
-(defn de-jong-app [data owner]
-  (reify
-    om/IRender
-    (render [this]
-      (dom/div nil
-        (om/build params-picker {:onChange handle-params-change
-                                 :params (:ifs-params data)})
-        (dom/canvas #js {:id "canvas" :width 800 :height 800})))))
-
-(om/root de-jong-app app-state
-  {:target (. js/document (getElementById "application"))})
-
 (defn de-jong-ifs [a b c d]
   {:pre [(every? #(and (<= % js/Math.PI) (>= % (- js/Math.PI))) [a b c d])]}
   (fn [[x y]]
     [(- (js/Math.sin (* a y)) (js/Math.cos (* b x)))
      (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))]))
-
-(defn get-context []
-  (let [canvas  (.getElementById js/document "canvas")
-        context (.getContext canvas "2d")
-        w       (.-width canvas)
-        h       (.-height canvas)]
-    { :size [w, h] :context context }))
-
-(defonce my-context (do (get-context)))
 
 (defn get-index [[w h] [x y]]
             (* 4 (+ (* w (.floor js/Math y)) (.floor js/Math x))))
@@ -68,9 +47,8 @@
 
 (def fill-color [0 192 0 64])
 
-(defn render-ifs [ifs num-points]
+(defn render-ifs [[w h] ctx ifs num-points]
   (let [all-points  (take num-points (iterate ifs [0 0]))
-        {[w h] :size ctx :context} my-context
         fill-image-data (fn [points]
           (let [image-data (.createImageData ctx w h)
                 data-with-size {:data (.-data image-data) :size [w h]}
@@ -84,4 +62,28 @@
             image-data))]
     (.putImageData ctx (fill-image-data all-points) 0 0)))
 
-(render-ifs (de-jong-ifs 0.97 -1.9 1.38 -1.5) 1e5)
+(defn ifs-viewer [{:keys [a b c d]} owner]
+  (let [w 800
+        h 800]
+  (reify
+    om/IDidMount
+    (did-mount [this]
+      (let [canvas  (om/get-node owner "canvas")
+            context (.getContext canvas "2d")
+            ifs     (de-jong-ifs a b c d)]
+        (render-ifs [w h] context ifs 1e5)))
+    om/IRender
+    (render [this]
+      (dom/canvas #js {:id "ifs-viewer" :ref "canvas" :width w :height h})))))
+
+(defn de-jong-app [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div nil
+        (om/build params-picker {:onChange handle-params-change
+                                 :params (:ifs-params data)})
+        (om/build ifs-viewer (:ifs-params data))))))
+
+(om/root de-jong-app app-state
+  {:target (. js/document (getElementById "application"))})
