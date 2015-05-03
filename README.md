@@ -1,18 +1,19 @@
-start a REPL
-
-    rlwrap java -cp cljs.jar:src clojure.main repl.clj
-
 build
 
-    java -cp cljs.jar:src clojure.main build.clj
+    lein cljsbuild once dev
 
 watch
 
-    java -cp cljs.jar:src clojure.main watch.clj
+    lein cljsbuild auto dev
+
+start a REPL
+
+    rlwrap lein figwheel
+    > (require '[de-jong.core :as de-jong])
 
 To Do:
 
-* [ ] Get the REPL working again
-* [ ] Get some nice circular slides (like http://www.toolitup.com/circular-slider.html)
+* [x] Get the REPL working again
+* [ ] Get some nice circular sliders (like http://www.toolitup.com/circular-slider.html)
 * [ ] look into changing the `globalCompositeOperation` to avoid manual overlay blending (https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation)
 * [ ] Smooth animations from one IFS to another -- hopefully get rid of the "draw" button

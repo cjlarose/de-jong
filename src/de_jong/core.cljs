@@ -1,12 +1,9 @@
 (ns ^:figwheel-always de-jong.core
   (:require [clojure.browser.repl :as repl]
-            [om.core :as om]
-            [om.dom :as dom]
+            [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true]
             [de-jong.params-picker :refer [params-picker]]
             [de-jong.ifs-viewer :refer [ifs-viewer]]))
-
-;; (defonce conn
-;;   (repl/connect "http://localhost:9000/repl"))
 
 (enable-console-print!)
 
