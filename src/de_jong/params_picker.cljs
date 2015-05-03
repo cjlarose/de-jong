@@ -10,7 +10,7 @@
         (dom/label
           #js {:htmlFor (str "param-" label)}
           label
-          (dom/input #js {:type "number"
+          (dom/input #js {:type "range"
                           :name (str "param-" label)
                           :min -3.14
                           :max 3.14
