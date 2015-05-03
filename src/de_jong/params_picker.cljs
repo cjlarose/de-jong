@@ -27,6 +27,9 @@
     om/IInitState
     (init-state [_]
       params)
+    om/IWillReceiveProps
+      (will-receive-props [this next-props]
+        (om/set-state! owner (:params next-props)))
     om/IRenderState
     (render-state [this state]
       (let [param-labels {:a "α" :b "β" :c "γ" :d "δ"}
