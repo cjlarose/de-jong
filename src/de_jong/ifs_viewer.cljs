@@ -67,4 +67,5 @@
       (render-in-canvas owner [w h] [a b c d]))
     om/IRender
     (render [this]
-      (dom/canvas #js {:id "ifs-viewer" :ref "canvas" :width w :height h})))))
+      (dom/div #js {:id "ifs-viewer"}
+        (dom/canvas #js {:ref "canvas" :width w :height h}))))))

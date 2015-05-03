@@ -4,6 +4,15 @@ body {
     padding: 0;
 }
 
+#application {
+    padding: 40px;
+}
+
+#ifs-viewer {
+    width: 800px;
+    margin: 0 auto;
+}
+
 #params-picker {
     background-color: #fff;
     padding: 20px;
