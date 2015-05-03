@@ -11,4 +11,11 @@
                 :output-to "main.js"
                 :output-dir "out"
                 :optimizations :none
-                :source-map true}}]})
+                :source-map true}}
+             {:id "release"
+              :source-paths ["src"]
+              :compiler {
+                :main de-jong.core
+                :output-to "main.js"
+                :optimizations :advanced
+                :pretty-print false}}]})
