@@ -12,7 +12,7 @@
   (reify
     om/IRender
     (render [this]
-      (dom/h1 nil (:text data)))))
+      (dom/canvas #js {:id "canvas" :width 800 :height 800}))))
 
 (om/root widget {:text "Hello world!"}
   {:target (. js/document (getElementById "application"))})
