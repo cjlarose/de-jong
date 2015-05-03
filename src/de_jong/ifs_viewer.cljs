@@ -49,16 +49,22 @@
             image-data))]
     (.putImageData ctx (fill-image-data all-points) 0 0)))
 
+(defn render-in-canvas [owner [w h] [a b c d]]
+  (let [canvas  (om/get-node owner "canvas")
+        context (.getContext canvas "2d")
+        ifs     (de-jong-ifs a b c d)]
+    (render-ifs [w h] context ifs 1e5)))
+
 (defn ifs-viewer [{:keys [a b c d]} owner]
   (let [w 800
         h 800]
   (reify
     om/IDidMount
     (did-mount [this]
-      (let [canvas  (om/get-node owner "canvas")
-            context (.getContext canvas "2d")
-            ifs     (de-jong-ifs a b c d)]
-        (render-ifs [w h] context ifs 1e5)))
+      (render-in-canvas owner [w h] [a b c d]))
+    om/IDidUpdate
+    (did-update [this _ _]
+      (render-in-canvas owner [w h] [a b c d]))
     om/IRender
     (render [this]
       (dom/canvas #js {:id "ifs-viewer" :ref "canvas" :width w :height h})))))

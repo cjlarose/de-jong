@@ -12,16 +12,18 @@
 
 (defonce app-state (atom {:ifs-params {:a 0.97 :b -1.9 :c 1.38 :d -1.5}}))
 
-(defn handle-params-change [params]
+(defn handle-params-change [data params]
   (println "yo")
-  (println params))
+  (println params)
+  (om/transact! data :ifs-params
+    (fn [_] params)))
 
 (defn de-jong-app [data owner]
   (reify
     om/IRender
     (render [this]
       (dom/div nil
-        (om/build params-picker {:onChange handle-params-change
+        (om/build params-picker {:onChange (partial handle-params-change data)
                                  :params (:ifs-params data)})
         (om/build ifs-viewer (:ifs-params data))))))
 
