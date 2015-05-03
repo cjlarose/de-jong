@@ -41,15 +41,16 @@
       params)
     om/IRenderState
     (render-state [this state]
-      (println state)
-      (dom/section #js {:id "params-picker"}
-        (dom/form #js {:onSubmit (partial handle-params-submit state)}
-          (dom/ul nil
-            (om/build param-picker {:label "α" :value (:a state) :onChange (partial handle-param-change owner :a)})
-            (om/build param-picker {:label "β" :value (:b state) :onChange (partial handle-param-change owner :b)})
-            (om/build param-picker {:label "γ" :value (:c state) :onChange (partial handle-param-change owner :c)})
-            (om/build param-picker {:label "δ" :value (:d state) :onChange (partial handle-param-change owner :d)}))
-          (dom/input #js {:type "submit" :value "Draw"}))))))
+      (let [param-labels {:a "α" :b "β" :c "γ" :d "δ"}
+            picker-props (fn [k] {:label (k param-labels)
+                                  :value (k state)
+                                  :onChange (partial handle-param-change owner k)})]
+        (println state)
+        (dom/section #js {:id "params-picker"}
+          (dom/form #js {:onSubmit (partial handle-params-submit state)}
+            (apply dom/ul nil
+              (om/build-all param-picker (map picker-props [:a :b :c :d])))
+            (dom/input #js {:type "submit" :value "Draw"})))))))
 
 (defn de-jong-app [data owner]
   (reify
