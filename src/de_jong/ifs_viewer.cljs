@@ -9,7 +9,7 @@
      (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))]))
 
 (defn get-index [[w h] [x y]]
-            (* 4 (+ (* w (.floor js/Math y)) (.floor js/Math x))))
+  (* 4 (+ (* w (.floor js/Math y)) (.floor js/Math x))))
 
 (defn get-color [{size :size data :data} [x y]]
   (let [idx (get-index size [x y])]
