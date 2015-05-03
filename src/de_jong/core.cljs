@@ -30,11 +30,7 @@
   (om/set-state! owner k v)
   (println (str k " is now set to " v)))
 
-(defn handle-params-submit [state e]
-  (.preventDefault e)
-  (println state))
-
-(defn params-picker [params owner]
+(defn params-picker [{:keys [params onChange]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -47,17 +43,22 @@
                                   :onChange (partial handle-param-change owner k)})]
         (println state)
         (dom/section #js {:id "params-picker"}
-          (dom/form #js {:onSubmit (partial handle-params-submit state)}
+          (dom/form #js {:onSubmit (fn [e] (.preventDefault e) (onChange state))}
             (apply dom/ul nil
               (om/build-all param-picker (map picker-props [:a :b :c :d])))
             (dom/input #js {:type "submit" :value "Draw"})))))))
+
+(defn handle-params-change [params]
+  (println "yo")
+  (println params))
 
 (defn de-jong-app [data owner]
   (reify
     om/IRender
     (render [this]
       (dom/div nil
-        (om/build params-picker (:ifs-params data))
+        (om/build params-picker {:onChange handle-params-change
+                                 :params (:ifs-params data)})
         (dom/canvas #js {:id "canvas" :width 800 :height 800})))))
 
 (om/root de-jong-app app-state
