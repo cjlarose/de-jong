@@ -1,2 +1,4 @@
 .repl-*
-out
+/out
+/target
+/main.js

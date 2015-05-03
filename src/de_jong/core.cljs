@@ -1,10 +1,21 @@
 (ns de-jong.core
-  (:require [clojure.browser.repl :as repl]))
+  (:require [clojure.browser.repl :as repl]
+            [om.core :as om]
+            [om.dom :as dom]))
 
-(defonce conn
-  (repl/connect "http://localhost:9000/repl")) 
+;; (defonce conn
+;;   (repl/connect "http://localhost:9000/repl"))
 
 (enable-console-print!)
+
+(defn widget [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/h1 nil (:text data)))))
+
+(om/root widget {:text "Hello world!"}
+  {:target (. js/document (getElementById "application"))})
 
 (defn de-jong-ifs [a b c d]
   {:pre [(every? #(and (<= % js/Math.PI) (>= % (- js/Math.PI))) [a b c d])]}
