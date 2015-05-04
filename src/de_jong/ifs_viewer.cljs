@@ -2,6 +2,10 @@
   (:require [om.core :as om]
             [om.dom :as dom]))
 
+(def fill-color [0 192 0 64])
+(def points-per-frame 1e4)
+(def points-to-draw 1e5)
+
 (defn de-jong-ifs [a b c d]
   {:pre [(every? #(and (<= % js/Math.PI) (>= % (- js/Math.PI))) [a b c d])]}
   (fn [[x y]]
@@ -32,40 +36,63 @@
      (+ (* by fg-alpha) (* bx (- 1 fg-alpha)))
      255]))
 
-(def fill-color [0 192 0 64])
+(defn draw-points [[w h] ctx points]
+  (let [image-data     (.createImageData ctx w h)
+        data-with-size {:data (.-data image-data) :size [w h]}
+        add-color      (fn [pos color]
+                         (set-color
+                           data-with-size
+                           pos
+                           (alpha-blend-colors (get-color data-with-size pos) color)))]
+    (doseq [[x y] points]
+      (add-color [(* (+ x 2) 200) (* (+ y 2) 200)] fill-color))
+    image-data))
 
-(defn render-ifs [[w h] ctx ifs num-points]
-  (let [all-points  (take num-points (iterate ifs [0 0]))
-        fill-image-data (fn [points]
-          (let [image-data (.createImageData ctx w h)
-                data-with-size {:data (.-data image-data) :size [w h]}
-                add-color (fn [pos color]
-                            (set-color
-                              data-with-size
-                              pos
-                              (alpha-blend-colors (get-color data-with-size pos) color)))]
-            (doseq [[x y] points]
-              (add-color [(* (+ x 2) 200) (* (+ y 2) 200)] fill-color))
-            image-data))]
-    (.putImageData ctx (fill-image-data all-points) 0 0)))
-
-(defn render-in-canvas [owner [w h] [a b c d]]
+(defn render-in-canvas [owner [w h] points]
   (let [canvas  (om/get-node owner "canvas")
         context (.getContext canvas "2d")
-        ifs     (de-jong-ifs a b c d)]
-    (render-ifs [w h] context ifs 1e5)))
+        image-data (draw-points [w h] context points)]
+    (.putImageData context image-data 0 0)))
 
-(defn ifs-viewer [{:keys [a b c d]} owner]
-  (let [w 800
-        h 800]
-  (reify
-    om/IDidMount
-    (did-mount [this]
-      (render-in-canvas owner [w h] [a b c d]))
-    om/IDidUpdate
-    (did-update [this _ _]
-      (render-in-canvas owner [w h] [a b c d]))
-    om/IRender
-    (render [this]
-      (dom/div #js {:id "ifs-viewer"}
-        (dom/canvas #js {:ref "canvas" :width w :height h}))))))
+(defn compute-next-points [ifs initial-point num-points]
+  (let [new-points (vec (take num-points (iterate ifs initial-point)))]
+    {:new-points new-points
+     :next-point (ifs (last new-points))}))
+
+(defn start-timer [owner]
+  (let [tick (fn self []
+               (if (>= (count (om/get-state owner :points)) points-to-draw)
+                 (om/set-state! owner :next-point nil)
+                 (let [{:keys [a b c d]} (:ifs-params (om/get-props owner))
+                       ifs               (de-jong-ifs a b c d)
+                       initial-point     (:next-point (om/get-state owner))
+                       {:keys [new-points next-point]} (compute-next-points ifs initial-point points-per-frame)]
+                   (println "tick")
+                   (println initial-point)
+                   (om/update-state! owner (fn [{:keys [points]}]
+                                             {:points (vec (concat points new-points))
+                                              :next-point next-point}))
+                   (println "calling self")
+                   (.setTimeout js/window self 20))))]
+    (.setTimeout js/window tick 200)))
+
+(defn ifs-viewer [{:keys [ifs-params point-data] :as data} owner]
+  (let [w 800 h 800]
+    (reify
+      om/IInitState
+      (init-state [_]
+        {:points [] :next-point [0 0]})
+      om/IDidMount
+      (did-mount [this]
+        (println "did-mount")
+        (start-timer owner))
+      om/IDidUpdate
+      (did-update [this prev-props prev-state]
+        (let [points (om/get-state owner :points)]
+          (println "did-update")
+          (println "points to draw: " (count points))
+          (render-in-canvas owner [w h] points)))
+      om/IRender
+      (render [this]
+        (dom/div #js {:id "ifs-viewer"}
+          (dom/canvas #js {:ref "canvas" :width w :height h}))))))

@@ -24,7 +24,7 @@
       (dom/div nil
         (om/build params-picker {:onChange (partial handle-params-change data)
                                  :params (:ifs-params data)})
-        (om/build ifs-viewer (:ifs-params data))))))
+        (om/build ifs-viewer data)))))
 
 (om/root de-jong-app app-state
   {:target (. js/document (getElementById "application"))})
