@@ -1,9 +1,11 @@
 (ns ^:figwheel-always de-jong.core
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.browser.repl :as repl]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [de-jong.params-picker :refer [params-picker]]
-            [de-jong.ifs-viewer :refer [ifs-viewer]]))
+            [de-jong.ifs-viewer :refer [ifs-viewer]]
+            [cljs.core.async :refer [chan <!]]))
 
 (enable-console-print!)
 
