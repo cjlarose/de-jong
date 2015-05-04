@@ -2,7 +2,7 @@
   (:require [om.core :as om]
             [om.dom :as dom]))
 
-(def fill-color [0 192 0 64])
+(def fill-color [0 192 0 255])
 (def points-per-frame 1e4)
 (def points-to-draw 1e5)
 
@@ -43,7 +43,8 @@
                          (set-color
                            data-with-size
                            pos
-                           (alpha-blend-colors (get-color data-with-size pos) color)))]
+                           color))]
+                           ;;(alpha-blend-colors (get-color data-with-size pos) color)))]
     (doseq [[x y] points]
       (add-color [(* (+ x 2) 200) (* (+ y 2) 200)] fill-color))
     image-data))
@@ -73,8 +74,8 @@
                                              {:points (vec (concat points new-points))
                                               :next-point next-point}))
                    (println "calling self")
-                   (.setTimeout js/window self 20))))]
-    (.setTimeout js/window tick 200)))
+                   (.requestAnimationFrame js/window self))))]
+    (.requestAnimationFrame js/window tick)))
 
 (defn ifs-viewer [{:keys [ifs-params point-data] :as data} owner]
   (let [w 800 h 800]
@@ -92,6 +93,11 @@
           (println "did-update")
           (println "points to draw: " (count points))
           (render-in-canvas owner [w h] points)))
+      om/IWillReceiveProps
+      (will-receive-props [this next-props]
+        (println "receiving props")
+        (om/update-state! owner (fn [_] {:points [] :next-point [0 0]}))
+        (start-timer owner))
       om/IRender
       (render [this]
         (dom/div #js {:id "ifs-viewer"}
