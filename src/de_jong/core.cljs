@@ -12,8 +12,6 @@
 (defonce app-state (atom {:ifs-params {:a 0.97 :b -1.9 :c 1.38 :d -1.5}}))
 
 (defn handle-params-change [data params]
-  (println "yo")
-  (println params)
   (om/transact! data :ifs-params
     (fn [_] params)))
 

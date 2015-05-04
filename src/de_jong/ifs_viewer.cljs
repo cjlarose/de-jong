@@ -12,48 +12,19 @@
     [(- (js/Math.sin (* a y)) (js/Math.cos (* b x)))
      (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))]))
 
-(defn get-index [[w h] [x y]]
-  (* 4 (+ (* w (.floor js/Math y)) (.floor js/Math x))))
-
-(defn get-color [{size :size data :data} [x y]]
-  (let [idx (get-index size [x y])]
-    [(aget data idx)
-     (aget data (+ 1 idx))
-     (aget data (+ 2 idx))
-     (aget data (+ 3 idx))]))
-
-(defn set-color [{size :size data :data} [x y] [r g b a]]
-  (let [idx (get-index size [x y])]
-    (aset data idx r)
-    (aset data (+ 1 idx) g)
-    (aset data (+ 2 idx) b)
-    (aset data (+ 3 idx) a)))
-
-(defn alpha-blend-colors [[rx gx bx _] [ry gy by ay]]
-  (let [fg-alpha (/ ay 255)]
-    [(+ (* ry fg-alpha) (* rx (- 1 fg-alpha)))
-     (+ (* gy fg-alpha) (* gx (- 1 fg-alpha)))
-     (+ (* by fg-alpha) (* bx (- 1 fg-alpha)))
-     255]))
-
-(defn draw-points [[w h] ctx points]
-  (let [image-data     (.createImageData ctx w h)
-        data-with-size {:data (.-data image-data) :size [w h]}
-        add-color      (fn [pos color]
-                         (set-color
-                           data-with-size
-                           pos
-                           color))]
-                           ;;(alpha-blend-colors (get-color data-with-size pos) color)))]
-    (doseq [[x y] points]
-      (add-color [(* (+ x 2) 200) (* (+ y 2) 200)] fill-color))
-    image-data))
+(defn setup-canvas [owner]
+  (let [canvas (om/get-node owner "canvas")
+        context (.getContext canvas "2d")]
+    (set! (.-fillStyle context) "rgba(0, 192, 0, 0.1)")
+    (.scale context 200 200)
+    (.translate context 2 2)))
 
 (defn render-in-canvas [owner [w h] points]
   (let [canvas  (om/get-node owner "canvas")
-        context (.getContext canvas "2d")
-        image-data (draw-points [w h] context points)]
-    (.putImageData context image-data 0 0)))
+        context (.getContext canvas "2d")]
+    (.clearRect context -2 -2 4 4)
+    (doseq [[x y] points]
+      (.fillRect context x y 1e-2 1e-2))))
 
 (defn compute-next-points [ifs initial-point num-points]
   (let [new-points (vec (take num-points (iterate ifs initial-point)))]
@@ -68,12 +39,9 @@
                        ifs               (de-jong-ifs a b c d)
                        initial-point     (:next-point (om/get-state owner))
                        {:keys [new-points next-point]} (compute-next-points ifs initial-point points-per-frame)]
-                   (println "tick")
-                   (println initial-point)
                    (om/update-state! owner (fn [{:keys [points]}]
                                              {:points (vec (concat points new-points))
                                               :next-point next-point}))
-                   (println "calling self")
                    (.requestAnimationFrame js/window self))))]
     (.requestAnimationFrame js/window tick)))
 
@@ -85,17 +53,14 @@
         {:points [] :next-point [0 0]})
       om/IDidMount
       (did-mount [this]
-        (println "did-mount")
+        (setup-canvas owner)
         (start-timer owner))
       om/IDidUpdate
       (did-update [this prev-props prev-state]
         (let [points (om/get-state owner :points)]
-          (println "did-update")
-          (println "points to draw: " (count points))
           (render-in-canvas owner [w h] points)))
       om/IWillReceiveProps
       (will-receive-props [this next-props]
-        (println "receiving props")
         (om/update-state! owner (fn [_] {:points [] :next-point [0 0]}))
         (start-timer owner))
       om/IRender
