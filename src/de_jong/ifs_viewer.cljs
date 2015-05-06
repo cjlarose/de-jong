@@ -27,7 +27,7 @@
 (defn set-new-points [owner]
   (let [ifs               (om/get-state owner :ifs)
         old-points        (om/get-state owner :points)
-        new-points        (map ifs old-points)]
+        new-points        (vec (map ifs old-points))]
     (om/set-state! owner :points new-points)))
 
 (defn random-points [minimum maximum]
