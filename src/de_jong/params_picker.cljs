@@ -18,28 +18,16 @@
                           :value value
                           :onChange (fn [e] (onChange (.parseFloat js/Number (.. e -target -value))))}))))))
 
-(defn handle-param-change [owner k v]
-  (om/set-state! owner k v)
-  (println (str k " is now set to " v)))
-
 (defn params-picker [{:keys [params onChange]} owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      params)
-    om/IWillReceiveProps
-      (will-receive-props [this next-props]
-        (om/set-state! owner (:params next-props)))
-    om/IRenderState
-    (render-state [this state]
+    om/IRender
+    (render [this]
       (let [param-labels {:a "α" :b "β" :c "γ" :d "δ"}
             picker-props (fn [k] {:label (k param-labels)
-                                  :value (k state)
-                                  :onChange (partial handle-param-change owner k)})]
-        (println state)
+                                  :value (k params)
+                                  :onChange #(onChange (assoc params k %))})]
+        (println params)
         (dom/section #js {:id "params-picker"}
-          (dom/form #js {:onSubmit (fn [e] (.preventDefault e) (onChange state))}
-            (apply dom/ul nil
-              (om/build-all param-picker (map picker-props [:a :b :c :d])))
-            (dom/input #js {:type "submit" :value "Draw"})))))))
+          (apply dom/ul nil
+            (om/build-all param-picker (map picker-props [:a :b :c :d]))))))))
 
