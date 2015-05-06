@@ -47,18 +47,18 @@
       (init-state [_]
         {:points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))})
       om/IDidMount
-      (did-mount [this]
+      (did-mount [_]
         (setup-canvas owner)
         (start-timer owner))
       om/IDidUpdate
-      (did-update [this prev-props prev-state]
+      (did-update [_ _ _]
         (let [points (om/get-state owner :points)]
           (render-in-canvas owner [w h] points)))
       om/IWillReceiveProps
-      (will-receive-props [this next-props]
+      (will-receive-props [_ _]
         (let [points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))]
           (om/set-state! owner :points points)))
       om/IRender
-      (render [this]
+      (render [_]
         (dom/div #js {:id "ifs-viewer"}
           (dom/canvas #js {:ref "canvas" :width w :height h}))))))
