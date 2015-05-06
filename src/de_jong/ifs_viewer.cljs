@@ -1,7 +1,6 @@
 (ns de-jong.ifs-viewer
   (:require [om.core :as om]
-            [om.dom :as dom]
-            [cljsjs.three]))
+            [om.dom :as dom]))
 
 (def points-to-draw 1e4)
 
