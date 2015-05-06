@@ -54,6 +54,10 @@
       (did-update [this prev-props prev-state]
         (let [points (om/get-state owner :points)]
           (render-in-canvas owner [w h] points)))
+      om/IWillReceiveProps
+      (will-receive-props [this next-props]
+        (let [points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))]
+          (om/set-state! owner :points points)))
       om/IRender
       (render [this]
         (dom/div #js {:id "ifs-viewer"}
