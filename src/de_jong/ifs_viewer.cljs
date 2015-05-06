@@ -24,14 +24,11 @@
     (doseq [[x y] points]
       (.fillRect context x y 1e-2 1e-2))))
 
-(defn start-timer [owner]
-  (let [tick (fn self []
-               (let [ifs               (om/get-state owner :ifs)
-                     old-points        (om/get-state owner :points)
-                     new-points        (map ifs old-points)]
-                 (om/set-state! owner :points new-points)
-                 (.requestAnimationFrame js/window self)))]
-    (.requestAnimationFrame js/window tick)))
+(defn set-new-points [owner]
+  (let [ifs               (om/get-state owner :ifs)
+        old-points        (om/get-state owner :points)
+        new-points        (map ifs old-points)]
+    (om/set-state! owner :points new-points)))
 
 (defn random-points [minimum maximum]
   (let [difference (- maximum minimum)
@@ -48,11 +45,12 @@
       om/IDidMount
       (did-mount [_]
         (setup-canvas owner)
-        (start-timer owner))
+        (set-new-points owner))
       om/IDidUpdate
       (did-update [_ _ _]
         (let [points (om/get-state owner :points)]
-          (render-in-canvas owner [w h] points)))
+          (render-in-canvas owner [w h] points))
+        (set-new-points owner))
       om/IWillReceiveProps
       (will-receive-props [_ _]
         (let [ifs (de-jong-ifs a b c d)
