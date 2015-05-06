@@ -27,11 +27,10 @@
 
 (defn start-timer [owner]
   (let [tick (fn self []
-               (let [{:keys [a b c d]} (:ifs-params (om/get-props owner))
-                     ifs               (de-jong-ifs a b c d)
+               (let [ifs               (om/get-state owner :ifs)
                      old-points        (om/get-state owner :points)
                      new-points        (map ifs old-points)]
-                 (om/update-state! owner (fn [_] {:points new-points}))
+                 (om/set-state! owner :points new-points)
                  (.requestAnimationFrame js/window self)))]
     (.requestAnimationFrame js/window tick)))
 
@@ -40,12 +39,13 @@
         random-val #(+ (* (js/Math.random) difference) minimum)]
     (map vec (partition 2 (repeatedly random-val)))))
 
-(defn ifs-viewer [{:keys [ifs-params point-data] :as data} owner]
+(defn ifs-viewer [{:keys [a b c d] :as ifs-params} owner]
   (let [w 800 h 800]
     (reify
       om/IInitState
       (init-state [_]
-        {:points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))})
+        {:points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))
+         :ifs (de-jong-ifs a b c d)})
       om/IDidMount
       (did-mount [_]
         (setup-canvas owner)
@@ -56,8 +56,9 @@
           (render-in-canvas owner [w h] points)))
       om/IWillReceiveProps
       (will-receive-props [_ _]
-        (let [points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))]
-          (om/set-state! owner :points points)))
+        (let [ifs (de-jong-ifs a b c d)
+              points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))]
+          (om/update-state! owner (fn [_] {:points points :ifs ifs}))))
       om/IRender
       (render [_]
         (dom/div #js {:id "ifs-viewer"}
