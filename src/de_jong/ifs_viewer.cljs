@@ -1,10 +1,9 @@
 (ns de-jong.ifs-viewer
   (:require [om.core :as om]
-            [om.dom :as dom]))
+            [om.dom :as dom]
+            [cljsjs.three]))
 
-(def fill-color [0 192 0 255])
-(def points-per-frame 1e4)
-(def points-to-draw 1e5)
+(def points-to-draw 1e4)
 
 (defn de-jong-ifs [a b c d]
   {:pre [(every? #(and (<= % js/Math.PI) (>= % (- js/Math.PI))) [a b c d])]}
@@ -15,7 +14,7 @@
 (defn setup-canvas [owner]
   (let [canvas (om/get-node owner "canvas")
         context (.getContext canvas "2d")]
-    (set! (.-fillStyle context) "rgba(0, 192, 0, 0.1)")
+    (set! (.-fillStyle context) "rgba(0, 192, 0, 0.5)")
     (.scale context 200 200)
     (.translate context 2 2)))
 
@@ -26,31 +25,27 @@
     (doseq [[x y] points]
       (.fillRect context x y 1e-2 1e-2))))
 
-(defn compute-next-points [ifs initial-point num-points]
-  (let [new-points (vec (take num-points (iterate ifs initial-point)))]
-    {:new-points new-points
-     :next-point (ifs (last new-points))}))
-
 (defn start-timer [owner]
   (let [tick (fn self []
-               (if (>= (count (om/get-state owner :points)) points-to-draw)
-                 (om/set-state! owner :next-point nil)
-                 (let [{:keys [a b c d]} (:ifs-params (om/get-props owner))
-                       ifs               (de-jong-ifs a b c d)
-                       initial-point     (:next-point (om/get-state owner))
-                       {:keys [new-points next-point]} (compute-next-points ifs initial-point points-per-frame)]
-                   (om/update-state! owner (fn [{:keys [points]}]
-                                             {:points (vec (concat points new-points))
-                                              :next-point next-point}))
-                   (.requestAnimationFrame js/window self))))]
+               (let [{:keys [a b c d]} (:ifs-params (om/get-props owner))
+                     ifs               (de-jong-ifs a b c d)
+                     old-points        (om/get-state owner :points)
+                     new-points        (map ifs old-points)]
+                 (om/update-state! owner (fn [_] {:points new-points}))
+                 (.requestAnimationFrame js/window self)))]
     (.requestAnimationFrame js/window tick)))
+
+(defn random-points [minimum maximum]
+  (let [difference (- maximum minimum)
+        random-val #(+ (* (js/Math.random) difference) minimum)]
+    (map vec (partition 2 (repeatedly random-val)))))
 
 (defn ifs-viewer [{:keys [ifs-params point-data] :as data} owner]
   (let [w 800 h 800]
     (reify
       om/IInitState
       (init-state [_]
-        {:points [] :next-point [0 0]})
+        {:points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))})
       om/IDidMount
       (did-mount [this]
         (setup-canvas owner)
@@ -59,10 +54,6 @@
       (did-update [this prev-props prev-state]
         (let [points (om/get-state owner :points)]
           (render-in-canvas owner [w h] points)))
-      om/IWillReceiveProps
-      (will-receive-props [this next-props]
-        (om/update-state! owner (fn [_] {:points [] :next-point [0 0]}))
-        (start-timer owner))
       om/IRender
       (render [this]
         (dom/div #js {:id "ifs-viewer"}
