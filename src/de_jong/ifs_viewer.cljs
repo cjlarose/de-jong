@@ -32,8 +32,8 @@
       (init-state [_]
         (let [geometry (js/THREE.Geometry.)
               scene    (js/THREE.Scene.)
-              camera   (js/THREE.PerspectiveCamera. 75 (/ w h) 0.1 1000)
-              material (js/THREE.PointCloudMaterial. #js { :size 0.02 })
+              camera   (js/THREE.PerspectiveCamera. 45 (/ w h) 0.1 1000)
+              material (js/THREE.PointCloudMaterial. #js { :size 0.02 :color 0x00cc00 })
               cloud    (js/THREE.PointCloud. geometry material)]
           (.add scene cloud)
           (set! (.-z (.-position camera)) 6)
@@ -44,7 +44,8 @@
             :camera camera }))
       om/IDidMount
       (did-mount [_]
-        (let [renderer (js/THREE.WebGLRenderer. #js { :canvas (om/get-node owner "canvas") })]
+        (let [renderer (js/THREE.WebGLRenderer. #js { :canvas (om/get-node owner "canvas")
+                                                      :alpha true })]
           (om/update-state! owner (fn [prev] (merge prev {:points (get-new-points owner)
                                                           :renderer renderer})))))
       om/IDidUpdate
