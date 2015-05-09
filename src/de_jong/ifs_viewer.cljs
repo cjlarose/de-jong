@@ -7,12 +7,13 @@
 
 (defn de-jong-ifs [a b c d]
   {:pre [(every? #(and (<= % js/Math.PI) (>= % (- js/Math.PI))) [a b c d])]}
-  (fn [[x y]]
+  (fn [[x y z]]
     [(- (js/Math.sin (* a y)) (js/Math.cos (* b x)))
-     (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))]))
+     (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))
+     (- (js/Math.sin (* 2.0 x)) (js/Math.cos (* 2.0 y)))]))
 
 (defn points-to-vertices [points]
-  (apply array (map (fn [[x y]] (js/THREE.Vector3. x y 1)) points)))
+  (apply array (map (fn [[x y z]] (js/THREE.Vector3. x y z)) points)))
 
 (defn get-new-points [owner]
   (let [ifs        (om/get-state owner :ifs)
@@ -23,7 +24,7 @@
 (defn random-points [minimum maximum]
   (let [difference (- maximum minimum)
         random-val #(+ (* (js/Math.random) difference) minimum)]
-    (map vec (partition 2 (repeatedly random-val)))))
+    (map vec (partition 3 (repeatedly random-val)))))
 
 (defn ifs-viewer [{:keys [a b c d] :as ifs-params} owner]
   (let [w 800 h 800]
@@ -36,12 +37,13 @@
               material (js/THREE.PointCloudMaterial. #js { :size 0.02 :color 0x00cc00 })
               cloud    (js/THREE.PointCloud. geometry material)]
           (.add scene cloud)
-          (set! (.-z (.-position camera)) 6)
+          (set! (.-z (.-position camera)) 8)
           { :points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))
             :ifs (de-jong-ifs a b c d)
             :geometry geometry
             :scene scene
-            :camera camera }))
+            :camera camera
+            :cloud cloud }))
       om/IDidMount
       (did-mount [_]
         (let [renderer (js/THREE.WebGLRenderer. #js { :canvas (om/get-node owner "canvas")
@@ -50,9 +52,11 @@
                                                           :renderer renderer})))))
       om/IDidUpdate
       (did-update [_ _ _]
-        (let [{:keys [geometry points renderer scene camera]} (om/get-state owner)]
+        (let [{:keys [geometry points renderer scene camera cloud]} (om/get-state owner)]
           (set! (.-vertices geometry) (points-to-vertices points))
           (set! (.-verticesNeedUpdate geometry) true)
+          (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
+          (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
           (.render renderer scene camera)
           (om/update-state! owner (fn [prev] (merge prev {:points (get-new-points owner)})))))
       om/IWillReceiveProps
