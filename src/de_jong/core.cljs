@@ -1,11 +1,9 @@
 (ns ^:figwheel-always de-jong.core
-  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.browser.repl :as repl]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [de-jong.params-picker :refer [params-picker]]
-            [de-jong.ifs-viewer :refer [ifs-viewer]]
-            [cljs.core.async :refer [chan <!]]))
+            [de-jong.points-calculator :refer [points-calculator]]))
 
 (enable-console-print!)
 
@@ -22,7 +20,7 @@
       (dom/div nil
         (om/build params-picker {:onChange (partial handle-params-change data)
                                  :params (:ifs-params data)})
-        (om/build ifs-viewer (:ifs-params data))))))
+        (om/build points-calculator (:ifs-params data))))))
 
 (om/root de-jong-app app-state
   {:target (. js/document (getElementById "application"))})
