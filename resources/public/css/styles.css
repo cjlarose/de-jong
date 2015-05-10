@@ -35,10 +35,16 @@ body {
 .param-display {
     color: #fff;
     position: absolute;
-    top: 43px;
+    top: 15px;
     left: 0;
     width: 100%;
     text-align: center;
+}
+
+.param-label {
+    font-size: 39px;
+    line-height: 1.5;
+    display: block;
 }
 
 /* Sliders */

@@ -35,7 +35,8 @@
 (defn slider [label value on-change]
   (dom/li #js { :className "param-picker" }
     (dom/div #js { :className "param-display" }
-      (str label ": " (.toFixed value 3)))
+      (dom/span #js { :className "param-label" } label)
+      (dom/span #js { :className "param-value" } (.toFixed value 3)))
     (om/build circular-slider {:value value :on-change on-change})))
 
 (defn param-picker [{:keys [label value on-change]} owner]
