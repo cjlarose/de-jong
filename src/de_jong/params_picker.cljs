@@ -21,14 +21,17 @@
                           :value value
                           :onChange (comp on-change parse-value) }))))))
 
-(defn params-picker [{:keys [params on-change]} owner]
+(defn handle-change [params i v]
+  (om/transact! params (fn [prev] (assoc prev i v))))
+
+(defn params-picker [params owner]
   (reify
     om/IRender
     (render [this]
       (let [param-labels ["α" "β" "γ" "δ"]
             picker-props (fn [i label v] { :label label
                                            :value v
-                                           :on-change #(on-change (assoc params i %)) })]
+                                           :on-change (partial handle-change params i) })]
         (dom/section #js {:id "params-picker"}
           (apply dom/ul nil
             (om/build-all param-picker (map picker-props (range 4) param-labels params))))))))
