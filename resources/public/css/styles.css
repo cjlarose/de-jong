@@ -16,7 +16,7 @@ body {
     left: 20px;
     background-color: #fff;
     padding: 20px;
-    font-size: 24px;
+    /*font-size: 24px;*/
 }
 
 #params-picker ul {
@@ -28,4 +28,30 @@ body {
 #params-picker label span {
     display: inline-block;
     width: 1em;
+}
+
+/* Sliders */
+
+.circular-slider {
+    background-color: #999;
+    border-radius: 50%;
+    border: 5px solid #f60;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: relative;
+    transform: rotate(0rad);
+}
+
+.circular-slider:before {
+    display: block;
+    width: 20px;
+    height: 20px;
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -10px;
+    margin-top: -10px;
+    background-color: #f0f;
 }
