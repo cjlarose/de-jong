@@ -7,7 +7,7 @@
 
 (enable-console-print!)
 
-(defonce app-state (atom {:ifs-params {:a 0.97 :b -1.9 :c 1.38 :d -1.5}}))
+(defonce app-state (atom {:ifs-params [0.97 -1.9 1.38 -1.5]}))
 
 (defn handle-params-change [data params]
   (om/transact! data :ifs-params
@@ -18,7 +18,7 @@
     om/IRender
     (render [this]
       (dom/div nil
-        (om/build params-picker {:onChange (partial handle-params-change data)
+        (om/build params-picker {:on-change (partial handle-params-change data)
                                  :params (:ifs-params data)})
         (om/build points-calculator (:ifs-params data))))))
 

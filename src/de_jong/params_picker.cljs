@@ -2,7 +2,10 @@
   (:require [om.core :as om]
             [om.dom :as dom]))
 
-(defn param-picker [{:keys [label value onChange]} owner]
+(defn parse-value [e]
+  (.parseFloat js/Number (.. e -target -value)))
+
+(defn param-picker [{:keys [label value on-change]} owner]
   (reify
     om/IRender
     (render [this]
@@ -11,23 +14,22 @@
           #js {:htmlFor (str "param-" label)}
           label
           (dom/input #js {:type "range"
-                          :name (str "param-" label)
+                          :id (str "param-" label)
                           :min -3.14
                           :max 3.14
                           :step "0.01"
                           :value value
-                          :onChange (fn [e] (onChange (.parseFloat js/Number (.. e -target -value))))}))))))
+                          :onChange (fn [e] (on-change (parse-value e))) }))))))
 
-(defn params-picker [{:keys [params onChange]} owner]
+(defn params-picker [{:keys [params on-change]} owner]
   (reify
     om/IRender
     (render [this]
-      (let [param-labels {:a "α" :b "β" :c "γ" :d "δ"}
-            picker-props (fn [k] {:label (k param-labels)
-                                  :value (k params)
-                                  :onChange #(onChange (assoc params k %))})]
-        (println params)
+      (let [param-labels ["α" "β" "γ" "δ"]
+            picker-props (fn [i label v] { :label label
+                                           :value v
+                                           :on-change #(on-change (assoc params i %))})]
         (dom/section #js {:id "params-picker"}
           (apply dom/ul nil
-            (om/build-all param-picker (map picker-props [:a :b :c :d]))))))))
+            (om/build-all param-picker (map picker-props (range 4) param-labels params))))))))
 

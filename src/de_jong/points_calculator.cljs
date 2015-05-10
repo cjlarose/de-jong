@@ -22,8 +22,8 @@
         new-points           (vec (map ifs points))]
     (om/update-state! owner (fn [prev] (merge prev { :points new-points })))))
 
-(defn state-from-params [{:keys [a b c d]}]
-  { :ifs    (de-jong-ifs a b c d)
+(defn state-from-params [ifs-params]
+  { :ifs    (apply de-jong-ifs ifs-params)
     :points (take points-to-draw (random-points -2.0 2.0)) })
 
 (defn points-calculator [ifs-params owner]
