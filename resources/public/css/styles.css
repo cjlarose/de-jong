@@ -65,4 +65,11 @@ body {
     margin-top: -10px;
     background-color: hsl(210, 100%, 60%);
     border: 5px solid #fff;
+    cursor: -webkit-grab;
+    cursor: grab;
+}
+
+.circular-slider-grabbing:before {
+    cursor: -webkit-grabbing;
+    cursor: grabbing;
 }

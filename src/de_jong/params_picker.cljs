@@ -30,7 +30,7 @@
                                (on-change (get-angle e))))
               :onMouseUp (fn [e]
                            (om/set-state! owner :listening false))
-              :className "circular-slider" } ))))
+              :className (str "circular-slider" (if listening " circular-slider-grabbing")) } ))))
 
 (defn slider [label value on-change]
   (dom/li #js { :className "param-picker" }
