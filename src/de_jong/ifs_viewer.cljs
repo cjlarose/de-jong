@@ -46,7 +46,10 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (let [{:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
+        ;;(println (nth points 0))
+        (nth points 0)
         (set! (.-vertices geometry) (points-to-vertices points))
+        ;;(println (.-vertices geometry))
         (set! (.-verticesNeedUpdate geometry) true)
         (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
         (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
