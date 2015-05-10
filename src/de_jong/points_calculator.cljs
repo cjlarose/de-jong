@@ -19,15 +19,18 @@
 
 (defn update-points [owner]
   (let [{:keys [ifs points]} (om/get-state owner)
-        new-points               (vec (map ifs points))]
+        new-points           (vec (map ifs points))]
     (om/update-state! owner (fn [prev] (merge prev { :points new-points })))))
 
-(defn points-calculator [{:keys [a b c d]} owner]
+(defn state-from-params [{:keys [a b c d]}]
+  { :ifs    (de-jong-ifs a b c d)
+    :points (take points-to-draw (random-points -2.0 2.0)) })
+
+(defn points-calculator [ifs-params owner]
   (reify
     om/IInitState
     (init-state [_]
-      { :points (take points-to-draw (random-points -2.0 2.0))
-        :ifs    (de-jong-ifs a b c d) })
+      (state-from-params ifs-params))
     om/IDidMount
     (did-mount [_]
       (update-points owner))
@@ -36,9 +39,7 @@
       (update-points owner))
     om/IWillReceiveProps
     (will-receive-props [_ _]
-      (let [ifs    (de-jong-ifs a b c d)
-            points (take points-to-draw (random-points -2.0 2.0))]
-        (om/update-state! owner (fn [_] { :ifs ifs :points points }))))
+      (om/update-state! owner (fn [_] (state-from-params ifs-params))))
     om/IRenderState
     (render-state [_ state]
       (om/build ifs-viewer (:points state)))))
