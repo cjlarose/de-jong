@@ -13,8 +13,7 @@
      (- (js/Math.sin (* 2.0 x)) (js/Math.cos (* 2.0 y)))]))
 
 (defn random-points [minimum maximum]
-  (let [difference (- maximum minimum)
-        random-val #(+ (* (js/Math.random) difference) minimum)]
+  (let [random-val #(+ (rand (- maximum minimum)) minimum)]
     (map vec (partition 3 (repeatedly random-val)))))
 
 (defn update-points [owner]
