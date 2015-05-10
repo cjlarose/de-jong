@@ -5,6 +5,16 @@
 (defn parse-value [e]
   (js/Number.parseFloat (.. e -target -value)))
 
+(defn slider [label value on-change]
+  (dom/input #js { :type "range"
+                   :id (str "param-" label)
+                   :min -3.14
+                   :max 3.14
+                   :step "0.01"
+                   :value value
+                   :onChange (comp on-change parse-value) }))
+
+
 (defn param-picker [{:keys [label value on-change]} owner]
   (reify
     om/IRender
@@ -13,13 +23,7 @@
         (dom/label
           #js {:htmlFor (str "param-" label)}
           label
-          (dom/input #js {:type "range"
-                          :id (str "param-" label)
-                          :min -3.14
-                          :max 3.14
-                          :step "0.01"
-                          :value value
-                          :onChange (comp on-change parse-value) }))))))
+          (slider label value on-change))))))
 
 (defn handle-change [params i v]
   (om/transact! params (fn [prev] (assoc prev i v))))
