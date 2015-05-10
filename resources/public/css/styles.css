@@ -14,7 +14,6 @@ body {
     position: absolute;
     top: 20px;
     left: 20px;
-    background-color: #fff;
     padding: 20px;
 }
 
@@ -34,6 +33,7 @@ body {
 }
 
 .param-display {
+    color: #fff;
     position: absolute;
     top: 43px;
     left: 0;
@@ -64,7 +64,7 @@ body {
     right: -15px;
     margin-top: -10px;
     background-color: hsl(210, 100%, 60%);
-    border: 5px solid #fff;
+    border: 2px solid #000;
     cursor: -webkit-grab;
     cursor: grab;
 }
