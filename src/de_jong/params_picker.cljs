@@ -11,7 +11,7 @@
         angle (js/Math.atan2 (- y cy) (- x cx))]
     (on-change angle)))
 
-(defn circular-slider [{:keys [value diameter on-change] :or {diameter 200}} owner]
+(defn circular-slider [{:keys [value diameter on-change] :or {diameter 100}} owner]
   (reify
     om/IRender
     (render [this]
@@ -23,17 +23,16 @@
               :className "circular-slider" } ))))
 
 (defn slider [label value on-change]
-  (dom/div nil
-    (dom/p nil label)
-    (dom/p nil value)
+  (dom/li #js { :className "param-picker" }
+    (dom/div #js { :className "param-display" }
+      (str label ": " (.toFixed value 3)))
     (om/build circular-slider {:value value :on-change on-change})))
 
 (defn param-picker [{:keys [label value on-change]} owner]
   (reify
     om/IRender
     (render [this]
-      (dom/li nil
-        (slider label value on-change)))))
+      (slider label value on-change))))
 
 (defn handle-change [params i v]
   (om/transact! params (fn [prev] (assoc prev i v))))

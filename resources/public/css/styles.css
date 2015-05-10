@@ -16,7 +16,6 @@ body {
     left: 20px;
     background-color: #fff;
     padding: 20px;
-    /*font-size: 24px;*/
 }
 
 #params-picker ul {
@@ -25,17 +24,27 @@ body {
     list-style: none;
 }
 
-#params-picker label span {
-    display: inline-block;
-    width: 1em;
+.param-picker {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.param-picker:last-child {
+    margin-bottom: 0px;
+}
+
+.param-display {
+    position: absolute;
+    top: 43px;
+    left: 0;
+    width: 100%;
+    text-align: center;
 }
 
 /* Sliders */
-
 .circular-slider {
-    background-color: #999;
     border-radius: 50%;
-    border: 5px solid #f60;
+    border: 5px solid hsl(210, 100%, 80%);
     top: 0;
     right: 0;
     bottom: 0;
@@ -48,10 +57,12 @@ body {
     display: block;
     width: 20px;
     height: 20px;
+    border-radius: 50%;
     content: "";
     position: absolute;
     top: 50%;
-    right: -10px;
+    right: -15px;
     margin-top: -10px;
-    background-color: #f0f;
+    background-color: hsl(210, 100%, 60%);
+    border: 5px solid #fff;
 }
