@@ -50,7 +50,7 @@ body {
 /* Sliders */
 .circular-slider {
     border-radius: 50%;
-    border: 5px solid hsl(210, 100%, 80%);
+    border: 5px solid hsl(132, 70%, 30%);
     top: 0;
     right: 0;
     bottom: 0;
@@ -69,7 +69,7 @@ body {
     top: 50%;
     right: -15px;
     margin-top: -10px;
-    background-color: hsl(210, 100%, 60%);
+    background-color: hsl(132, 70%, 50%);
     border: 2px solid #000;
     cursor: -webkit-grab;
     cursor: grab;
