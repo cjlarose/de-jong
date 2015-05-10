@@ -2,24 +2,34 @@
   (:require [om.core :as om]
             [om.dom :as dom]))
 
-(defn handle-click [owner on-change e]
+(defn get-angle [e]
   (let [rect  (.getBoundingClientRect (.-target e))
         cx    (/ (+ (.-left rect) (.-right rect)) 2)
         cy    (/ (+ (.-top rect) (.-bottom rect)) 2)
         x     (.-clientX e)
         y     (.-clientY e)
         angle (js/Math.atan2 (- y cy) (- x cx))]
-    (on-change angle)))
+    angle))
 
 (defn circular-slider [{:keys [value diameter on-change] :or {diameter 100}} owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [_]
+      { :listening false })
+    om/IRenderState
+    (render-state [this {:keys [listening]}]
       (dom/div
         #js { :style #js { :width diameter
                            :height diameter
                            :transform (str "rotate(" value "rad)") }
-              :onClick (partial handle-click owner on-change)
+              :onMouseDown (fn [e]
+                             (om/set-state! owner :listening true)
+                             (on-change (get-angle e)))
+              :onMouseMove (fn [e]
+                             (if listening
+                               (on-change (get-angle e))))
+              :onMouseUp (fn [e]
+                           (om/set-state! owner :listening false))
               :className "circular-slider" } ))))
 
 (defn slider [label value on-change]
