@@ -3,7 +3,7 @@
             [om.dom :as dom]))
 
 (defn parse-value [e]
-  (.parseFloat js/Number (.. e -target -value)))
+  (js/Number.parseFloat (.. e -target -value)))
 
 (defn param-picker [{:keys [label value on-change]} owner]
   (reify
@@ -19,7 +19,7 @@
                           :max 3.14
                           :step "0.01"
                           :value value
-                          :onChange (fn [e] (on-change (parse-value e))) }))))))
+                          :onChange (comp on-change parse-value) }))))))
 
 (defn params-picker [{:keys [params on-change]} owner]
   (reify
@@ -28,7 +28,7 @@
       (let [param-labels ["α" "β" "γ" "δ"]
             picker-props (fn [i label v] { :label label
                                            :value v
-                                           :on-change #(on-change (assoc params i %))})]
+                                           :on-change #(on-change (assoc params i %)) })]
         (dom/section #js {:id "params-picker"}
           (apply dom/ul nil
             (om/build-all param-picker (map picker-props (range 4) param-labels params))))))))
