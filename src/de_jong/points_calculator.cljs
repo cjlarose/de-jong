@@ -26,7 +26,7 @@
   (reify
     om/IInitState
     (init-state [_]
-      { :points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))
+      { :points (take points-to-draw (random-points -2.0 2.0))
         :ifs    (de-jong-ifs a b c d) })
     om/IDidMount
     (did-mount [_]
@@ -37,7 +37,7 @@
     om/IWillReceiveProps
     (will-receive-props [_ _]
       (let [ifs    (de-jong-ifs a b c d)
-            points (take points-to-draw (random-points (- js/Math.PI) js/Math.PI))]
+            points (take points-to-draw (random-points -2.0 2.0))]
         (om/update-state! owner (fn [_] { :ifs ifs :points points }))))
     om/IRenderState
     (render-state [_ state]
