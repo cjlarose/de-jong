@@ -25,7 +25,7 @@
               :compiler {
                 :main de-jong.core
                 :output-to "resources/public/js/compiled/de_jong.js"
-                :optimizations :advanced
+                :optimizations :simple
                 :pretty-print false}}]}
   :figwheel {
     :css-dirs ["resources/public/css"] ;; watch and update CSS
