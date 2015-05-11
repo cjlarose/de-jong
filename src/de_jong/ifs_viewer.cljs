@@ -1,6 +1,8 @@
 (ns de-jong.ifs-viewer
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om]
             [om.dom :as dom]
+            [cljs.core.async :refer [<! chan put!]]
             [cljsjs.three]))
 
 (defn points-to-vertices [points]
@@ -17,7 +19,23 @@
         (.setSize renderer w h)
         (merge prev { :width w :height h })))))
 
-(defn ifs-viewer [points owner]
+(defn animation-frame []
+  (let [comm (chan)]
+    (.requestAnimationFrame js/window (partial put! comm))
+    comm))
+
+(defn draw! [owner draw-chan]
+  (go (while true
+    (<! (animation-frame))
+    (let [points (<! draw-chan)
+          {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
+      (set! (.-vertices geometry) (points-to-vertices points))
+      (set! (.-verticesNeedUpdate geometry) true)
+      (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
+      (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
+      (.render renderer scene camera)))))
+
+(defn ifs-viewer [draw-chan owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -42,16 +60,8 @@
                                                     :alpha true })]
         (.setSize renderer (om/get-state owner :width) (om/get-state owner :height))
         (.addEventListener js/window "resize" (partial handle-resize owner))
+        (draw! owner draw-chan)
         (om/update-state! owner (fn [prev] (merge prev { :renderer renderer })))))
-    om/IDidUpdate
-    (did-update [_ _ _]
-      (if points
-        (let [{:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
-          (set! (.-vertices geometry) (points-to-vertices points))
-          (set! (.-verticesNeedUpdate geometry) true)
-          (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
-          (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
-          (.render renderer scene camera))))
     om/IRenderState
     (render-state [_ state]
       (dom/div #js {:id "ifs-viewer"}
