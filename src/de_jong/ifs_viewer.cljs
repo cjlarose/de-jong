@@ -19,21 +19,22 @@
         (.setSize renderer w h)
         (merge prev { :width w :height h })))))
 
-(defn animation-frame []
-  (let [comm (chan)]
-    (.requestAnimationFrame js/window (partial put! comm))
-    comm))
+(defn animation-frame [timeout-chan]
+  (let [ts (.requestAnimationFrame js/window #(animation-frame timeout-chan))]
+    (put! timeout-chan ts)))
 
 (defn draw! [owner draw-chan]
-  (go (while true
-    (<! (animation-frame))
-    (let [points (<! draw-chan)
-          {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
-      (set! (.-vertices geometry) (points-to-vertices points))
-      (set! (.-verticesNeedUpdate geometry) true)
-      (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
-      (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
-      (.render renderer scene camera)))))
+  (let [throttler (chan)]
+    (animation-frame throttler)
+    (go (while true
+      (<! throttler)
+      (let [points (<! draw-chan)
+            {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
+        (set! (.-vertices geometry) (points-to-vertices points))
+        (set! (.-verticesNeedUpdate geometry) true)
+        (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
+        (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
+        (.render renderer scene camera))))))
 
 (defn ifs-viewer [draw-chan owner]
   (reify
