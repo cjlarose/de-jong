@@ -31,7 +31,7 @@
                 (swap! points (if randomize
                                 (fn [_]
                                   (om/set-state! owner :should-randomize false)
-                                  (rand-points))
+                                  (map ifs (rand-points)))
                                 (partial map ifs))))))))
     om/IWillReceiveProps
     (will-receive-props [this {:keys [ifs-params] :as next-props}]
