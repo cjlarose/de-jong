@@ -3,7 +3,7 @@
             [om.dom :as dom]
             [de-jong.ifs-viewer :refer [ifs-viewer]]))
 
-(def points-to-draw (js/Math.pow 2 14))
+(def points-to-draw (js/Math.pow 2 13))
 
 (defn de-jong-ifs [a b c d]
   {:pre [(every? #(and (<= % js/Math.PI) (>= % (- js/Math.PI))) [a b c d])]}
