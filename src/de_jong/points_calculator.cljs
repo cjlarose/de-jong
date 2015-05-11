@@ -18,15 +18,6 @@
   (let [random-val #(+ (rand (- maximum minimum)) minimum)]
     (map vec (partition 3 (repeatedly random-val)))))
 
-(defn update-points [owner]
-  (let [{:keys [ifs points]} (om/get-state owner)
-        new-points           (vec (map ifs points))]
-    (om/update-state! owner (fn [prev] (merge prev { :points new-points })))))
-
-(defn state-from-params [ifs-params]
-  { :ifs    (apply de-jong-ifs ifs-params)
-    :points (take points-to-draw (random-points -2.0 2.0)) })
-
 (defn point-emitter [f]
   (let [comm (chan)
         points (atom (take points-to-draw (random-points -2.0 2.0)))]
@@ -35,6 +26,11 @@
           (swap! points (partial map f))))
     comm))
 
+(defn set-channel! [owner ifs-params]
+  (let [ifs  (apply de-jong-ifs ifs-params)
+        comm (point-emitter ifs)]
+    (om/set-state! owner :comm comm)))
+
 (defn points-calculator [ifs-params owner]
   (reify
     om/IInitState
@@ -42,21 +38,14 @@
       { :points nil })
     om/IDidMount
     (did-mount [_]
-      (let [ifs  (apply de-jong-ifs ifs-params)
-            comm (point-emitter ifs)]
-        (take! comm (fn [points]
-                      (om/update-state! owner (fn [_] { :points points
-                                                        :comm   comm }))))))
+      (set-channel! owner ifs-params))
     om/IDidUpdate
     (did-update [_ _ _]
       (let [comm (om/get-state owner :comm)]
-        (take! comm (fn [points]
-                      (om/set-state! owner :points points)))))
+        (take! comm (partial om/set-state! owner :points))))
     om/IWillReceiveProps
     (will-receive-props [_ _]
-      (let [ifs  (apply de-jong-ifs ifs-params)
-            comm (point-emitter ifs)]
-        (om/set-state! owner :comm comm)))
+      (set-channel! owner ifs-params))
     om/IRenderState
     (render-state [_ state]
       (om/build ifs-viewer (:points state)))))
