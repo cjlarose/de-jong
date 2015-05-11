@@ -1,6 +1,8 @@
 (ns de-jong.points-calculator
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om]
             [om.dom :as dom]
+            [cljs.core.async :refer [>! take! chan]]
             [de-jong.ifs-viewer :refer [ifs-viewer]]))
 
 (def points-to-draw (js/Math.pow 2 13))
@@ -25,20 +27,36 @@
   { :ifs    (apply de-jong-ifs ifs-params)
     :points (take points-to-draw (random-points -2.0 2.0)) })
 
+(defn point-emitter [f]
+  (let [comm (chan)
+        points (atom (take points-to-draw (random-points -2.0 2.0)))]
+    (go (while true
+          (>! comm @points)
+          (swap! points (partial map f))))
+    comm))
+
 (defn points-calculator [ifs-params owner]
   (reify
     om/IInitState
     (init-state [_]
-      (state-from-params ifs-params))
+      { :points nil })
     om/IDidMount
     (did-mount [_]
-      (update-points owner))
+      (let [ifs  (apply de-jong-ifs ifs-params)
+            comm (point-emitter ifs)]
+        (take! comm (fn [points]
+                      (om/update-state! owner (fn [_] { :points points
+                                                        :comm   comm }))))))
     om/IDidUpdate
     (did-update [_ _ _]
-      (update-points owner))
+      (let [comm (om/get-state owner :comm)]
+        (take! comm (fn [points]
+                      (om/set-state! owner :points points)))))
     om/IWillReceiveProps
     (will-receive-props [_ _]
-      (om/update-state! owner (fn [_] (state-from-params ifs-params))))
+      (let [ifs  (apply de-jong-ifs ifs-params)
+            comm (point-emitter ifs)]
+        (om/set-state! owner :comm comm)))
     om/IRenderState
     (render-state [_ state]
       (om/build ifs-viewer (:points state)))))

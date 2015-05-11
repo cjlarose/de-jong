@@ -45,12 +45,13 @@
         (om/update-state! owner (fn [prev] (merge prev { :renderer renderer })))))
     om/IDidUpdate
     (did-update [_ _ _]
-      (let [{:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
-        (set! (.-vertices geometry) (points-to-vertices points))
-        (set! (.-verticesNeedUpdate geometry) true)
-        (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
-        (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
-        (.render renderer scene camera)))
+      (if points
+        (let [{:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
+          (set! (.-vertices geometry) (points-to-vertices points))
+          (set! (.-verticesNeedUpdate geometry) true)
+          (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
+          (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
+          (.render renderer scene camera))))
     om/IRenderState
     (render-state [_ state]
       (dom/div #js {:id "ifs-viewer"}
