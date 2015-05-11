@@ -6,7 +6,9 @@
             [cljs.core.async :refer [chan >!]]
             [de-jong.params-picker :refer [params-picker]]
             [de-jong.ifs-viewer :refer [ifs-viewer]]
-            [de-jong.points-calculator :refer [points-to-draw random-points de-jong-ifs]]))
+            [de-jong.points-calculator :refer [points-to-draw random-points
+                                               de-jong-ifs vertex-array
+                                               mutate-in-place!]]))
 
 (enable-console-print!)
 
@@ -19,20 +21,18 @@
       {:should-randomize false})
     om/IWillMount
     (will-mount [_]
-      (let [rand-points #(take points-to-draw (random-points -2.0 2.0))
-            points      (atom (rand-points))
-            draw-chan   (chan)]
+      (let [points-array  (vertex-array points-to-draw)
+            rand-mutation #(first (random-points -2.0 2.0))
+            draw-chan     (chan)]
+        (mutate-in-place! rand-mutation points-array)
         (om/set-state! owner :draw-chan draw-chan)
         (go (while true
-              (>! draw-chan @points)
+              (>! draw-chan points-array)
               (let [params (om/get-props owner :ifs-params)
                     ifs    (apply de-jong-ifs params)
                     randomize (om/get-state owner :should-randomize)]
-                (swap! points (if randomize
-                                (fn [_]
-                                  (om/set-state! owner :should-randomize false)
-                                  (map ifs (rand-points)))
-                                (partial map ifs))))))))
+                (mutate-in-place! (if randomize (comp ifs rand-mutation) ifs) points-array)
+                (if randomize (om/set-state! owner :should-randomize false)))))))
     om/IWillReceiveProps
     (will-receive-props [this {:keys [ifs-params] :as next-props}]
       (let [old-ifs-params (om/get-props owner :ifs-params)]

@@ -12,3 +12,17 @@
 (defn random-points [minimum maximum]
   (let [random-val #(+ (rand (- maximum minimum)) minimum)]
     (map vec (partition 3 (repeatedly random-val)))))
+
+(defn vertex-array [length]
+  (js/Float32Array. (* 3 length)))
+
+(defn mutate-in-place! [f vtex-arr]
+  (doseq [i (range 0 (.-length vtex-arr) 3)]
+    (let [x (aget vtex-arr i)
+          y (aget vtex-arr (+ i 1))
+          z (aget vtex-arr (+ i 2))
+          [x2 y2 z2] (f [x y z])]
+      (aset vtex-arr i x2)
+      (aset vtex-arr (+ i 1) y2)
+      (aset vtex-arr (+ i 2) z2)))
+  vtex-arr)

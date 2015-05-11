@@ -5,9 +5,6 @@
             [cljs.core.async :refer [<! chan put!]]
             [cljsjs.three]))
 
-(defn points-to-vertices [points]
-  (apply array (map (fn [[x y z]] (js/THREE.Vector3. x y z)) points)))
-
 (defn handle-resize [owner e]
   (om/update-state!
     owner
@@ -29,9 +26,9 @@
     (go (while true
       (<! throttler)
       (let [points (<! draw-chan)
+            vertex-attr (js/THREE.BufferAttribute. points 3)
             {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
-        (set! (.-vertices geometry) (points-to-vertices points))
-        (set! (.-verticesNeedUpdate geometry) true)
+        (.addAttribute geometry "position" vertex-attr)
         (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
         (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
         (.render renderer scene camera))))))
@@ -42,7 +39,7 @@
     (init-state [_]
       (let [width    (.-innerWidth js/window)
             height   (.-innerHeight js/window)
-            geometry (js/THREE.Geometry.)
+            geometry (js/THREE.BufferGeometry.)
             scene    (js/THREE.Scene.)
             camera   (js/THREE.PerspectiveCamera. 45 (/ width height) 0.1 1000)
             material (js/THREE.PointCloudMaterial. #js { :size 0.02 :color 0x00cc00 })
