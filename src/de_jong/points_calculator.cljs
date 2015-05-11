@@ -4,7 +4,7 @@
 
 (defn de-jong-ifs [a b c d]
   {:pre [(every? #(and (<= % js/Math.PI) (>= % (- js/Math.PI))) [a b c d])]}
-  (fn [[x y z]]
+  (fn [x y z]
     [(- (js/Math.sin (* a y)) (js/Math.cos (* b x)))
      (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))
      (- (js/Math.sin (* 2.0 x)) (js/Math.cos (* 2.0 y)))]))
@@ -21,7 +21,7 @@
     (let [x (aget vtex-arr i)
           y (aget vtex-arr (+ i 1))
           z (aget vtex-arr (+ i 2))
-          [x2 y2 z2] (f [x y z])]
+          [x2 y2 z2] (f x y z)]
       (aset vtex-arr i x2)
       (aset vtex-arr (+ i 1) y2)
       (aset vtex-arr (+ i 2) z2)))

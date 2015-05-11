@@ -22,7 +22,7 @@
     om/IWillMount
     (will-mount [_]
       (let [points-array  (vertex-array points-to-draw)
-            rand-mutation #(first (random-points -2.0 2.0))
+            rand-mutation (fn [_ _ _] (first (random-points -2.0 2.0)))
             draw-chan     (chan)]
         (mutate-in-place! rand-mutation points-array)
         (om/set-state! owner :draw-chan draw-chan)
@@ -31,7 +31,10 @@
               (let [params (om/get-props owner :ifs-params)
                     ifs    (apply de-jong-ifs params)
                     randomize (om/get-state owner :should-randomize)]
-                (mutate-in-place! (if randomize (comp ifs rand-mutation) ifs) points-array)
+                (mutate-in-place! (if randomize
+                                    (comp (partial apply ifs) rand-mutation)
+                                    ifs)
+                                  points-array)
                 (if randomize (om/set-state! owner :should-randomize false)))))))
     om/IWillReceiveProps
     (will-receive-props [this {:keys [ifs-params] :as next-props}]
