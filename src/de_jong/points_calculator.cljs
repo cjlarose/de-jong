@@ -9,10 +9,6 @@
      (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))
      (- (js/Math.sin (* 2.0 x)) (js/Math.cos (* 2.0 y)))]))
 
-(defn random-points [minimum maximum]
-  (let [random-val #(+ (rand (- maximum minimum)) minimum)]
-    (map vec (partition 3 (repeatedly random-val)))))
-
 (defn vertex-array [length]
   (js/Float32Array. (* 3 length)))
 
@@ -26,3 +22,15 @@
       (aset vtex-arr (+ i 1) y2)
       (aset vtex-arr (+ i 2) z2)))
   vtex-arr)
+
+(defn random-vals [minimum maximum]
+  (repeatedly #(+ (rand (- maximum minimum)) minimum)))
+
+(defn write-random-values! [vtex-arr minimum maximum]
+  (let [length (.-length vtex-arr)]
+    (loop [i      0
+           values (random-vals minimum maximum)]
+      (if (< i length)
+        (do
+          (aset vtex-arr i (first values))
+          (recur (inc i) (rest values)))))))
