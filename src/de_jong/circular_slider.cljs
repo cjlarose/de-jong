@@ -18,7 +18,7 @@
       { :listening false })
     om/IRenderState
     (render-state [this {:keys [listening]}]
-      (let [stop-listening! #(om/set-state! owner :listening false)]
+      (let [stop-listening! (fn [_] (om/set-state! owner :listening false))]
         (dom/div
           #js { :style #js { :width diameter
                              :height diameter
@@ -29,6 +29,6 @@
                 :onMouseMove (fn [e]
                                (if listening
                                  (on-change (get-angle e))))
-                :onMouseUp    (stop-listening!)
-                :onMouseLeave (stop-listening!)
+                :onMouseUp    stop-listening!
+                :onMouseLeave stop-listening!
                 :className (str "circular-slider" (if listening " circular-slider-grabbing")) } )))))
