@@ -5,16 +5,13 @@
             [cljs.core.async :refer [<! chan put!]]
             [cljsjs.three]))
 
-(defn handle-resize [owner e]
-  (om/update-state!
-    owner
-    (fn [{:keys [renderer camera] :as prev}]
-      (let [w (.-innerWidth js/window)
-            h (.-innerHeight js/window)]
-        (set! (.-aspect camera) (/ w h))
-        (.updateProjectionMatrix camera)
-        (.setSize renderer w h)
-        (merge prev { :width w :height h })))))
+(defn handle-resize [owner _]
+  (let [{:keys [renderer camera]} (om/get-state owner)
+        w (.-innerWidth js/window)
+        h (.-innerHeight js/window)]
+    (set! (.-aspect camera) (/ w h))
+    (.updateProjectionMatrix camera)
+    (.setSize renderer w h)))
 
 (defn animation-frame
   ([]
@@ -51,18 +48,16 @@
         { :geometry geometry
           :scene scene
           :camera camera
-          :cloud cloud
-          :width width
-          :height height }))
+          :cloud cloud }))
     om/IDidMount
     (did-mount [_]
       (let [renderer (js/THREE.WebGLRenderer. #js { :canvas (om/get-node owner "canvas")
                                                     :alpha true })]
-        (.setSize renderer (om/get-state owner :width) (om/get-state owner :height))
+        (.setSize renderer (.-innerWidth js/window) (.-innerHeight js/window))
         (.addEventListener js/window "resize" (partial handle-resize owner))
         (draw! owner draw-chan)
         (om/update-state! owner (fn [prev] (merge prev { :renderer renderer })))))
-    om/IRenderState
-    (render-state [_ state]
+    om/IRender
+    (render [_]
       (dom/div #js {:id "ifs-viewer"}
-        (dom/canvas #js {:ref "canvas" :width (:width state) :height (:height state)})))))
+        (dom/canvas #js { :ref "canvas" })))))
