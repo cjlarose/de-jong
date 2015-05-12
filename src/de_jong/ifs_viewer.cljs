@@ -16,13 +16,15 @@
         (.setSize renderer w h)
         (merge prev { :width w :height h })))))
 
-(defn animation-frame [timeout-chan]
-  (let [ts (.requestAnimationFrame js/window #(animation-frame timeout-chan))]
-    (put! timeout-chan ts)))
+(defn animation-frame
+  ([]
+    (animation-frame (chan)))
+  ([comm]
+    (put! comm (.requestAnimationFrame js/window (fn [_] (animation-frame comm))))
+    comm))
 
 (defn draw! [owner draw-chan]
-  (let [throttler (chan)]
-    (animation-frame throttler)
+  (let [throttler (animation-frame)]
     (go (while true
       (<! throttler)
       (let [points (<! draw-chan)
