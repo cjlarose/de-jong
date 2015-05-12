@@ -24,7 +24,7 @@
                            { :label label
                              :value v
                              :on-change (partial handle-change i) })]
-        (dom/section #js {:id "params-picker"}
+        (dom/section #js { :id "params-picker" :className "noselect" }
           (apply dom/ul nil
             (om/build-all param-picker (map picker-props (range 4) param-labels params))))))))
 
