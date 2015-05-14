@@ -1,7 +1,7 @@
-(ns de-jong.params-picker
+(ns de-jong.components.params-picker
   (:require [om.core :as om]
             [om.dom :as dom]
-            [de-jong.circular-slider :refer [circular-slider]]))
+            [de-jong.components.circular-slider :refer [circular-slider]]))
 
 (defn param-picker [{:keys [label value on-change]} owner]
   (reify

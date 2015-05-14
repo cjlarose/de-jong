@@ -4,8 +4,8 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [chan >!]]
-            [de-jong.params-picker :refer [params-picker]]
-            [de-jong.ifs-viewer :refer [ifs-viewer]]
+            [de-jong.components.params-picker :refer [params-picker]]
+            [de-jong.components.ifs-viewer :refer [ifs-viewer]]
             [de-jong.points-calculator :refer [points-to-draw
                                                write-random-values!
                                                de-jong-ifs

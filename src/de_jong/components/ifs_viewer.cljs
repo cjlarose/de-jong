@@ -1,4 +1,4 @@
-(ns de-jong.ifs-viewer
+(ns de-jong.components.ifs-viewer
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om]
             [om.dom :as dom]

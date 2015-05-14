@@ -1,4 +1,4 @@
-(ns de-jong.circular-slider
+(ns de-jong.components.circular-slider
   (:require [om.core :as om]
             [om.dom :as dom]))
 
