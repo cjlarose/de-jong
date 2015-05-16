@@ -12,31 +12,40 @@
      (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))
      (- (js/Math.sin (* 2.0 x)) (js/Math.cos (* 2.0 y)))]))
 
-(defn vertex-array [length]
+(defn- vertex-array [length]
   (js/Float32Array. (* 3 length)))
-
-(defn mutate-in-place! [f vtex-arr]
-  (doseq [i (range 0 (.-length vtex-arr) 3)]
-    (let [x (aget vtex-arr i)
-          y (aget vtex-arr (+ i 1))
-          z (aget vtex-arr (+ i 2))
-          [x2 y2 z2] (f x y z)]
-      (aset vtex-arr i x2)
-      (aset vtex-arr (+ i 1) y2)
-      (aset vtex-arr (+ i 2) z2)))
-  vtex-arr)
 
 (defn random-vals [minimum maximum]
   (repeatedly #(+ (rand (- maximum minimum)) minimum)))
 
-(defn write-random-values! [vtex-arr minimum maximum]
-  (let [length (.-length vtex-arr)]
+(defn- write-random-values! [minimum maximum vertices]
+  (let [length (.-length vertices)]
     (loop [i      0
            values (random-vals minimum maximum)]
       (if (< i length)
         (do
-          (aset vtex-arr i (first values))
-          (recur (inc i) (rest values)))))))
+          (aset vertices i (first values))
+          (recur (inc i) (rest values)))))
+    vertices))
+
+(defn random-vertex-array [length minimum maximum]
+  (let [arr (vertex-array length)]
+    (write-random-values! minimum maximum arr)))
+
+(defn vertices-apply [f vertices]
+  (let [length  (.-length vertices)
+        new-arr (vertex-array (/ length 3))]
+    (loop [i 0]
+      (if (< i length)
+        (let [x (aget vertices i)
+              y (aget vertices (+ i 1))
+              z (aget vertices (+ i 2))
+              [x2 y2 z2] (f x y z)]
+          (aset new-arr i x2)
+          (aset new-arr (+ i 1) y2)
+          (aset new-arr (+ i 2) z2)
+          (recur (+ i 3) ))))
+    new-arr))
 
 ; TEAM TAU!!!1!
 (def tau (* 2 js/Math.PI))

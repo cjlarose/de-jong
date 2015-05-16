@@ -7,10 +7,9 @@
             [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.components.ifs-viewer :refer [ifs-viewer]]
             [de-jong.points-calculator :refer [points-to-draw
-                                               write-random-values!
                                                de-jong-ifs
-                                               vertex-array
-                                               mutate-in-place!]]))
+                                               random-vertex-array
+                                               vertices-apply]]))
 
 (enable-console-print!)
 
@@ -23,19 +22,19 @@
       {:should-randomize false})
     om/IWillMount
     (will-mount [_]
-      (let [points-array  (vertex-array points-to-draw)
-            draw-chan     (chan)]
-        (write-random-values! points-array -2.0 2.0)
+      (let [random-array (random-vertex-array points-to-draw -2.0 2.0)
+            points-array (atom random-array)
+            draw-chan    (chan)]
         (om/set-state! owner :draw-chan draw-chan)
         (go (while true
-              (>! draw-chan points-array)
+              (>! draw-chan @points-array)
               (let [params (om/get-props owner :ifs-params)
                     ifs    (apply de-jong-ifs params)]
                 (if (om/get-state owner :should-randomize)
                   (do
-                    (write-random-values! points-array -2.0 2.0)
+                    (reset! points-array random-array)
                     (om/set-state! owner :should-randomize false)))
-                (mutate-in-place! ifs points-array))))))
+                (swap! points-array (partial vertices-apply ifs)))))))
     om/IWillReceiveProps
     (will-receive-props [this {:keys [ifs-params] :as next-props}]
       (let [old-ifs-params (om/get-props owner :ifs-params)]
