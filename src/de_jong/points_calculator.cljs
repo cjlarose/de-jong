@@ -32,21 +32,19 @@
   (let [arr (vertex-array length)]
     (write-random-values! minimum maximum arr)))
 
-(defn- get-vertices [vertices]
-  (partition 3 (array-seq vertices)))
-
 (defn vertices-apply [f vertices]
   (let [length  (.-length vertices)
         new-arr (vertex-array (/ length 3))]
-    (loop [i      0
-           values (get-vertices vertices)]
+    (loop [i 0]
       (if (< i length)
-        (let [[x y z] (first values)
+        (let [x (aget vertices i)
+              y (aget vertices (+ i 1))
+              z (aget vertices (+ i 2))
               [x2 y2 z2] (f x y z)]
           (aset new-arr i x2)
           (aset new-arr (+ i 1) y2)
           (aset new-arr (+ i 2) z2)
-          (recur (+ i 3) (rest values)))))
+          (recur (+ i 3) ))))
     new-arr))
 
 ; TEAM TAU!!!1!
