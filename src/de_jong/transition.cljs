@@ -21,3 +21,14 @@
                 in-plane
                 wrap-around)))]
     (vec (map f final initial))))
+
+(defn lerp [t initial final]
+  {:pre [(and (>= t 0) (<= t 1))]}
+  (+ initial (* t (- final initial))))
+
+(defn interpolated-points [initial final num-frames]
+  (let [displacement (displacement-vector initial final)
+        step         (/ 1 num-frames)
+        vec-lerp     (fn [t i f] (map (partial lerp t) i f))
+        points       (map #(vec-lerp % initial final) (range 0 1 step))]
+    points))
