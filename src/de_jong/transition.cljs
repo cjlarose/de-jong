@@ -27,8 +27,9 @@
   (+ initial (* t (- final initial))))
 
 (defn interpolated-points [initial final num-frames]
-  (let [displacement (displacement-vector initial final)
-        step         (/ 1 num-frames)
-        vec-lerp     (fn [t i f] (map (partial lerp t) i f))
-        points       (map #(vec-lerp % initial final) (range 0 1 step))]
+  (let [displacement  (displacement-vector initial final)
+        virtual-final (map + initial displacement)
+        step          (/ 1 num-frames)
+        vec-lerp      (fn [t i f] (map (partial lerp t) i f))
+        points        (map #(vec-lerp % initial virtual-final) (range 0 1 step))]
     points))
