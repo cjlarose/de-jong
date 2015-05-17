@@ -31,8 +31,16 @@
         vec-lerp (fn [t i f] (map (partial lerp t) i f))]
     (map #(vec-lerp % initial final) (range 0 1 step))))
 
+(defn wrap-around
+  "Wraps values from [-2 * PI, 2 * PI) into [-PI, PI)"
+  [x]
+  (cond
+    (>= x js/Math.PI) (- x tau)
+    (< x (- js/Math.PI)) (+ x tau)
+    :else x))
+
 (defn lerp-vectors-torus [initial final num-frames]
   (let [displacement    (displacement-vector initial final)
         effective-final (map + initial displacement)
-        normalize       (partial map (fn [x] (cond (>= x js/Math.PI) (- x tau) (< x (- js/Math.PI)) (+ x tau) :else x)))]
+        normalize       (partial map wrap-around)]
     (map normalize (lerp-vectors initial effective-final num-frames))))
