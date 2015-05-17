@@ -32,6 +32,7 @@
     (map #(vec-lerp % initial final) (range 0 1 step))))
 
 (defn lerp-vectors-torus [initial final num-frames]
-  (let [displacement  (displacement-vector initial final)
-        final         (map + initial displacement)]
-    (lerp-vectors initial final num-frames)))
+  (let [displacement    (displacement-vector initial final)
+        effective-final (map + initial displacement)
+        normalize       (partial map (fn [x] (cond (>= x js/Math.PI) (- x tau) (< x (- js/Math.PI)) (+ x tau) :else x)))]
+    (map normalize (lerp-vectors initial effective-final num-frames))))
