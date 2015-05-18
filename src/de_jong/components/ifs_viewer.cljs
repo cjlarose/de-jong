@@ -13,25 +13,16 @@
     (.updateProjectionMatrix camera)
     (.setSize renderer w h)))
 
-(defn animation-frame
-  ([]
-    (animation-frame (chan)))
-  ([comm]
-    (put! comm (.requestAnimationFrame js/window (fn [_] (animation-frame comm))))
-    comm))
-
 (defn draw! [owner draw-chan]
-  (let [throttler (animation-frame)]
-    (go (while true
-      (<! throttler)
-      (let [points (<! draw-chan)]
-        (if-not (nil? points)
-          (let [vertex-attr (js/THREE.BufferAttribute. points 3)
-                {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
-            (.addAttribute geometry "position" vertex-attr)
-            (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
-            (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
-            (.render renderer scene camera))))))))
+  (go (while true
+    (let [points (<! draw-chan)]
+      (if-not (nil? points)
+        (let [vertex-attr (js/THREE.BufferAttribute. points 3)
+              {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
+          (.addAttribute geometry "position" vertex-attr)
+          (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
+          (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
+          (.render renderer scene camera)))))))
 
 (defn ifs-viewer [draw-chan owner]
   (reify
