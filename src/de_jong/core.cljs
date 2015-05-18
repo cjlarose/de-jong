@@ -3,7 +3,7 @@
   (:require [clojure.browser.repl :as repl]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [cljs.core.async :refer [chan >! close!]]
+            [cljs.core.async :refer [chan >! close! timeout put!]]
             [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.components.ifs-viewer :refer [ifs-viewer]]
             [de-jong.points-calculator :refer [points-to-draw
@@ -15,38 +15,36 @@
 
 (defonce app-state (atom {:ifs-params [0.97 -1.9 1.38 -1.5]}))
 
-(defn calculator-channel [owner draw-chan]
-  (let [random-array (random-vertex-array points-to-draw -2.0 2.0)
-        points-array (atom random-array)]
+(defn calculator-channel [params-chan initial-seq]
+  (let [draw-chan    (chan)
+        random-array (random-vertex-array points-to-draw -2.0 2.0)
+        points-array (atom random-array)
+        params-seq   (atom initial-seq)]
     (go (while true
       (>! draw-chan @points-array)
-      (let [params (om/get-props owner :ifs-params)
-            ifs    (apply de-jong-ifs params)]
-        (if (om/get-state owner :should-randomize)
+      (let [[v port] (alts! [params-chan (timeout 17)])]
+        (if-not (nil? v)
           (do
-            (reset! points-array random-array)
-            (om/set-state! owner :should-randomize false)))
-        (swap! points-array (partial vertices-apply ifs)))))))
+            (reset! params-seq v)
+            (reset! points-array random-array)))
+        (let [ifs (apply de-jong-ifs (first @params-seq))]
+          (swap! points-array (partial vertices-apply ifs))
+          (swap! params-seq rest)))))
+    draw-chan))
 
 (defn de-jong-app [data owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:should-randomize false})
-    om/IWillMount
-    (will-mount [_]
-      (let [draw-chan (chan)
-            calc-chan (calculator-channel owner draw-chan)]
-        (om/set-state! owner :draw-chan draw-chan)
-        (om/set-state! owner :calc-chan calc-chan)))
-    ; om/IWillUnmount
-    ; (will-unmount [_]
-    ;   (close! (om/get-state owner :calc-chan)))
+      (let [params-chan (chan)]
+        {:params-chan params-chan
+         :draw-chan   (calculator-channel params-chan (repeat (:ifs-params data)))}))
     om/IWillReceiveProps
     (will-receive-props [this {:keys [ifs-params] :as next-props}]
       (let [old-ifs-params (om/get-props owner :ifs-params)]
         (if-not (= old-ifs-params ifs-params)
-          (om/set-state! owner :should-randomize true))))
+          (let [params-chan (om/get-state owner :params-chan)]
+            (put! params-chan (repeat ifs-params))))))
     om/IRenderState
     (render-state [this {:keys [draw-chan]}]
       (dom/div nil
