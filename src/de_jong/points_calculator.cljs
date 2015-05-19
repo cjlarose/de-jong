@@ -1,6 +1,6 @@
 (ns de-jong.points-calculator)
 
-(def points-to-draw (js/Math.pow 2 13))
+(def points-to-draw (js/Math.pow 2 12))
 
 (defn in-range [x]
   (and (>= x (- js/Math.PI)) (<= x js/Math.PI)))
@@ -15,22 +15,26 @@
 (defn- vertex-array [length]
   (js/Float32Array. (* 3 length)))
 
-(defn random-vals [minimum maximum]
-  (repeatedly #(+ (rand (- maximum minimum)) minimum)))
-
-(defn- write-random-values! [minimum maximum vertices]
-  (let [length (.-length vertices)]
+(defn- write-values! [arr vertices-seq]
+  (let [length (.-length arr)]
     (loop [i      0
-           values (random-vals minimum maximum)]
+           values vertices-seq]
       (if (< i length)
         (do
-          (aset vertices i (first values))
-          (recur (inc i) (rest values)))))
-    vertices))
+          (let [[x y z] (first values)]
+            (aset arr i x)
+            (aset arr (+ i 1) y)
+            (aset arr (+ i 2) z))
+          (recur (+ i 3) (rest values)))))))
 
-(defn random-vertex-array [length minimum maximum]
-  (let [arr (vertex-array length)]
-    (write-random-values! minimum maximum arr)))
+(defn lattice-vertex-array [length minimum maximum]
+  (let [arr  (vertex-array length)
+        size (.sqrt js/Math length)
+        ratio (/ (- maximum minimum) size)
+        vertices (for [x (range size) y (range size)]
+                         [(+ (* x ratio) minimum) (+ (* y ratio) minimum) 0])]
+    (write-values! arr vertices)
+    arr))
 
 (defn vertices-apply [f vertices]
   (let [length  (.-length vertices)

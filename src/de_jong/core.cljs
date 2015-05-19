@@ -8,7 +8,7 @@
             [de-jong.components.ifs-viewer :refer [ifs-viewer]]
             [de-jong.points-calculator :refer [points-to-draw
                                                de-jong-ifs
-                                               random-vertex-array
+                                               lattice-vertex-array
                                                vertices-apply]]))
 
 (enable-console-print!)
@@ -23,18 +23,18 @@
     comm))
 
 (defn calculator-channel [params-chan initial-seq]
-  (let [throttler    (animation-frame)
-        draw-chan    (chan)
-        random-array (random-vertex-array points-to-draw -2.0 2.0)
-        points-array (atom random-array)
-        params-seq   (atom initial-seq)]
+  (let [throttler     (animation-frame)
+        draw-chan     (chan)
+        initial-array (lattice-vertex-array points-to-draw -2.0 2.0)
+        points-array  (atom initial-array)
+        params-seq    (atom initial-seq)]
     (go (while true
       (>! draw-chan @points-array)
       (let [[v port] (alts! [params-chan throttler])]
         (if (= port params-chan)
           (do
             (reset! params-seq v)
-            (reset! points-array random-array)))
+            (reset! points-array initial-array)))
         (let [ifs (apply de-jong-ifs (first @params-seq))]
           (swap! points-array (partial vertices-apply ifs))
           (swap! params-seq rest)))))
