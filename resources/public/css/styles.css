@@ -10,14 +10,17 @@ body {
     display: block;
 }
 
-#params-picker {
+.params-picker-container {
     position: absolute;
     top: 20px;
     left: 20px;
+}
+
+.params-picker {
     padding: 20px;
 }
 
-#params-picker ul {
+.params-picker ul {
     margin: 0;
     padding: 0;
     list-style: none;
