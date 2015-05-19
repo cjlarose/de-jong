@@ -44,9 +44,10 @@
   (reify
     om/IInitState
     (init-state [_]
-      (let [params-chan (chan)]
+      (let [params-chan (chan)
+            initial-seq (repeat (:ifs-params data))]
         {:params-chan params-chan
-         :draw-chan   (calculator-channel params-chan (repeat (:ifs-params data)))}))
+         :draw-chan   (calculator-channel params-chan initial-seq)}))
     om/IWillReceiveProps
     (will-receive-props [this {:keys [ifs-params] :as next-props}]
       (let [old-ifs-params (om/get-props owner :ifs-params)]
