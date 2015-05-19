@@ -9,11 +9,14 @@
             [de-jong.points-calculator :refer [points-to-draw
                                                de-jong-ifs
                                                random-vertex-array
-                                               vertices-apply]]))
+                                               vertices-apply]]
+            [de-jong.transition :refer [transition-params]]))
 
 (enable-console-print!)
 
-(defonce app-state (atom {:ifs-params [0.97 -1.9 1.38 -1.5]}))
+(defonce app-state (atom {:ifs-params [[1   2   -1   1]
+                                       [1   2.5 -1.5 2.5]
+                                       [1.5 2.5 -1   2.5]]}))
 
 (defn animation-frame
   ([]
@@ -40,12 +43,14 @@
           (swap! params-seq rest)))))
     draw-chan))
 
+(def make-transition (comp cycle (partial transition-params 60)))
+
 (defn de-jong-app [data owner]
   (reify
     om/IInitState
     (init-state [_]
       (let [params-chan (chan)
-            initial-seq (repeat (:ifs-params data))]
+            initial-seq (make-transition (:ifs-params data))]
         {:params-chan params-chan
          :draw-chan   (calculator-channel params-chan initial-seq)}))
     om/IWillReceiveProps
@@ -53,11 +58,12 @@
       (let [old-ifs-params (om/get-props owner :ifs-params)]
         (if-not (= old-ifs-params ifs-params)
           (let [params-chan (om/get-state owner :params-chan)]
-            (put! params-chan (repeat ifs-params))))))
+            (put! params-chan (make-transition ifs-params))))))
     om/IRenderState
     (render-state [this {:keys [draw-chan]}]
       (dom/div nil
-        (om/build params-picker (:ifs-params data))
+        (apply dom/div #js {:className "params-picker-container"}
+          (om/build-all params-picker (:ifs-params data)))
         (om/build point-cloud draw-chan)))))
 
 (om/root de-jong-app app-state
