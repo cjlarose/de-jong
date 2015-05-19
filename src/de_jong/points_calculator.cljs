@@ -7,10 +7,10 @@
 
 (defn de-jong-ifs [a b c d]
   {:pre [(every? in-range [a b c d])]}
-  (fn [x y z]
+  (fn [x y _]
     [(- (js/Math.sin (* a y)) (js/Math.cos (* b x)))
      (- (js/Math.sin (* c x)) (js/Math.cos (* d y)))
-     (- (js/Math.sin (* 2.0 x)) (js/Math.cos (* 2.0 y)))]))
+     0]))
 
 (defn- vertex-array [length]
   (js/Float32Array. (* 3 length)))

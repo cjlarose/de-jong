@@ -20,8 +20,6 @@
         (let [vertex-attr (js/THREE.BufferAttribute. points 3)
               {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
           (.addAttribute geometry "position" vertex-attr)
-          (set! (.-y (.-rotation cloud)) (+ 0.01 (.-y (.-rotation cloud))))
-          (set! (.-z (.-rotation cloud)) (+ 0.01 (.-z (.-rotation cloud))))
           (.render renderer scene camera)))))))
 
 (defn ifs-viewer [draw-chan owner]
