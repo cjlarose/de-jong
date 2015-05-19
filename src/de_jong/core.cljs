@@ -43,7 +43,7 @@
           (swap! params-seq rest)))))
     draw-chan))
 
-(def make-transition (comp cycle (partial transition-params 60)))
+(def make-transition (comp cycle (partial transition-params 120)))
 
 (defn de-jong-app [data owner]
   (reify
