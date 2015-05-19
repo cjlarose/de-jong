@@ -6,8 +6,8 @@
             [cljs.core.async :refer [chan >! close! timeout put!]]
             [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.components.ifs-viewer :refer [ifs-viewer]]
-            [de-jong.points-calculator :refer [points-to-draw
-                                               de-jong-ifs
+            [de-jong.constants :refer [points-to-draw]]
+            [de-jong.points-calculator :refer [de-jong-ifs
                                                lattice-vertex-array
                                                vertices-apply]]))
 
@@ -34,10 +34,10 @@
         (if (= port params-chan)
           (do
             (reset! params-seq v)
-            (reset! points-array initial-array)))
-        (let [ifs (apply de-jong-ifs (first @params-seq))]
-          (swap! points-array (partial vertices-apply ifs))
-          (swap! params-seq rest)))))
+            (reset! points-array initial-array)
+            (let [ifs (apply de-jong-ifs (first @params-seq))]
+              (swap! points-array (partial vertices-apply ifs))
+              (swap! params-seq rest)))))))
     draw-chan))
 
 (defn de-jong-app [data owner]

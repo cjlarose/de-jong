@@ -1,6 +1,5 @@
-(ns de-jong.points-calculator)
-
-(def points-to-draw (js/Math.pow 2 12))
+(ns de-jong.points-calculator
+  (:require [de-jong.util :refer [write-values!]]))
 
 (defn in-range [x]
   (and (>= x (- js/Math.PI)) (<= x js/Math.PI)))
@@ -14,18 +13,6 @@
 
 (defn- vertex-array [length]
   (js/Float32Array. (* 3 length)))
-
-(defn- write-values! [arr vertices-seq]
-  (let [length (.-length arr)]
-    (loop [i      0
-           values vertices-seq]
-      (if (< i length)
-        (do
-          (let [[x y z] (first values)]
-            (aset arr i x)
-            (aset arr (+ i 1) y)
-            (aset arr (+ i 2) z))
-          (recur (+ i 3) (rest values)))))))
 
 (defn lattice-vertex-array [length minimum maximum]
   (let [arr  (vertex-array length)
