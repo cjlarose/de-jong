@@ -14,7 +14,7 @@
 
 (enable-console-print!)
 
-(defonce app-state (atom {:ifs-params [[1   1   -1   1]
+(defonce app-state (atom {:ifs-params [[1   2   -1   1]
                                        [1   2.5 -1.5 2.5]
                                        [1.5 2.5 -1   2.5]]}))
 
