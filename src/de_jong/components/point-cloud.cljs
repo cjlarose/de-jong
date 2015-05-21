@@ -1,4 +1,4 @@
-(ns de-jong.components.ifs-viewer
+(ns de-jong.components.point-cloud
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om]
             [om.dom :as dom]
@@ -22,7 +22,7 @@
           (.addAttribute geometry "position" vertex-attr)
           (.render renderer scene camera)))))))
 
-(defn ifs-viewer [draw-chan owner]
+(defn point-cloud [draw-chan owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -49,5 +49,5 @@
         (om/update-state! owner (fn [prev] (merge prev { :renderer renderer })))))
     om/IRender
     (render [_]
-      (dom/div #js {:id "ifs-viewer"}
+      (dom/div #js {:id "point-cloud"}
         (dom/canvas #js { :ref "canvas" })))))

@@ -5,7 +5,7 @@
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [chan >! close! timeout put!]]
             [de-jong.components.params-picker :refer [params-picker]]
-            [de-jong.components.ifs-viewer :refer [ifs-viewer]]
+            [de-jong.components.point-cloud :refer [point-cloud]]
             [de-jong.points-calculator :refer [points-to-draw
                                                de-jong-ifs
                                                random-vertex-array
@@ -58,7 +58,7 @@
     (render-state [this {:keys [draw-chan]}]
       (dom/div nil
         (om/build params-picker (:ifs-params data))
-        (om/build ifs-viewer draw-chan)))))
+        (om/build point-cloud draw-chan)))))
 
 (om/root de-jong-app app-state
   {:target (. js/document (getElementById "application"))})

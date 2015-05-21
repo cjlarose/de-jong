@@ -6,7 +6,7 @@ body {
     padding: 0;
 }
 
-#ifs-viewer canvas {
+#point-cloud canvas {
     display: block;
 }
 
