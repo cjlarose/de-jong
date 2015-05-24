@@ -7,8 +7,8 @@
     om/IRender
     (render [this]
       (dom/li #js {:className (str "preview" (if selected " selected"))}
-        (dom/a #js {:href "#" :onClick (fn [e] (.preventDefault e) (onSelect))}
-          (apply str (interpose "," params)))))))
+        (apply dom/a #js {:href "#" :onClick (fn [e] (.preventDefault e) (onSelect))}
+          (map (partial dom/p nil) params))))))
 
 (defn preview-params [selection idx params]
   { :onSelect (fn [] (om/transact! selection #(assoc % :idx idx)))

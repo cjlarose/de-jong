@@ -26,7 +26,6 @@ body {
     display: block;
     color: #fff;
     width: 150px;
-    height: 100px;
     border: 1px solid #999;
     margin: 2px;
 }
@@ -37,7 +36,7 @@ body {
 
 .params-picker-container {
     position: absolute;
-    top: 100px;
+    top: 150px;
     left: 20px;
 }
 
