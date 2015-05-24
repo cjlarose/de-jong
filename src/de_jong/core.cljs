@@ -14,9 +14,10 @@
 
 (enable-console-print!)
 
-(defonce app-state (atom {:ifs-params [[1   1   -1   1]
-                                       [1   2.5 -1.5 2.5]
-                                       [1.5 2.5 -1   2.5]]}))
+(defonce app-state (atom { :ifs-params [[1   1   -1   1]
+                                        [1   2.5 -1.5 2.5]
+                                        [1.5 2.5 -1   2.5]]
+                           :selection {:idx 0} }))
 
 (defn animation-frame
   ([]
@@ -62,7 +63,7 @@
     om/IRenderState
     (render-state [this {:keys [draw-chan]}]
       (dom/div nil
-        (om/build editor (:ifs-params data))
+        (om/build editor data)
         (om/build point-cloud draw-chan)))))
 
 (om/root de-jong-app app-state

@@ -10,6 +10,28 @@ body {
     display: block;
 }
 
+.editor {
+    margin: 0;
+    padding: 0;
+}
+
+.preview {
+    display: inline-block;
+}
+
+.preview a {
+    display: block;
+    color: #fff;
+    width: 150px;
+    height: 100px;
+    border: 1px solid #999;
+    margin: 2px;
+}
+
+.preview.selected a {
+    border: 1px solid #fff;
+}
+
 .params-picker-container {
     position: absolute;
     top: 20px;
