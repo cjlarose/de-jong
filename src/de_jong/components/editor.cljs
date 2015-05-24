@@ -1,7 +1,6 @@
 (ns de-jong.components.editor
   (:require [om.core :as om]
-            [om.dom :as dom]
-            [de-jong.components.params-picker :refer [params-picker]]))
+            [om.dom :as dom]))
 
 (defn preview [{:keys [params onSelect selected]} owner]
   (reify
@@ -22,8 +21,6 @@
     (render [this]
       (dom/div nil
         (apply dom/ul #js {:className "editor"}
-          (om/build-all preview (map-indexed
-                                  (partial preview-params selection)
-                                  ifs-params)))
-        (apply dom/div #js {:className "params-picker-container"}
-          (om/build-all params-picker ifs-params))))))
+          (om/build-all
+            preview
+            (map-indexed (partial preview-params selection) ifs-params)))))))

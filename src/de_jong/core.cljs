@@ -6,6 +6,7 @@
             [cljs.core.async :refer [chan >! close! timeout put!]]
             [de-jong.components.point-cloud :refer [point-cloud]]
             [de-jong.components.editor :refer [editor]]
+            [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.points-calculator :refer [points-to-draw
                                                de-jong-ifs
                                                random-vertex-array
@@ -64,6 +65,8 @@
     (render-state [this {:keys [draw-chan]}]
       (dom/div nil
         (om/build editor data)
+        (apply dom/div #js {:className "params-picker-container"}
+          (om/build-all params-picker (:ifs-params data)))
         (om/build point-cloud draw-chan)))))
 
 (om/root de-jong-app app-state
