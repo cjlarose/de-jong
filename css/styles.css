@@ -6,18 +6,45 @@ body {
     padding: 0;
 }
 
-#ifs-viewer canvas {
+#point-cloud canvas {
     display: block;
 }
 
-#params-picker {
+.editor {
+    margin: 0;
+    padding: 0;
     position: absolute;
-    top: 20px;
+    top: 0px;
+    left: 0px;
+}
+
+.preview {
+    display: inline-block;
+}
+
+.preview a {
+    display: block;
+    color: #fff;
+    width: 150px;
+    border: 1px solid #999;
+    margin: 2px;
+}
+
+.preview.selected a {
+    border: 1px solid #fff;
+}
+
+.params-picker-container {
+    position: absolute;
+    top: 150px;
     left: 20px;
+}
+
+.params-picker {
     padding: 20px;
 }
 
-#params-picker ul {
+.params-picker ul {
     margin: 0;
     padding: 0;
     list-style: none;
