@@ -4,8 +4,8 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [chan >! close! timeout put!]]
-            [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.components.point-cloud :refer [point-cloud]]
+            [de-jong.components.editor :refer [editor]]
             [de-jong.points-calculator :refer [points-to-draw
                                                de-jong-ifs
                                                random-vertex-array
@@ -62,8 +62,7 @@
     om/IRenderState
     (render-state [this {:keys [draw-chan]}]
       (dom/div nil
-        (apply dom/div #js {:className "params-picker-container"}
-          (om/build-all params-picker (:ifs-params data)))
+        (om/build editor (:ifs-params data))
         (om/build point-cloud draw-chan)))))
 
 (om/root de-jong-app app-state
