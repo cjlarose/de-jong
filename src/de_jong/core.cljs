@@ -47,12 +47,12 @@
 
 (def make-transition (comp cycle (partial transition-params 120)))
 
-(defn de-jong-app [data owner]
+(defn de-jong-app [{:keys [selection ifs-params] :as data} owner]
   (reify
     om/IInitState
     (init-state [_]
       (let [params-chan (chan)
-            initial-seq (make-transition (:ifs-params data))]
+            initial-seq (make-transition ifs-params)]
         {:params-chan params-chan
          :draw-chan   (calculator-channel params-chan initial-seq)}))
     om/IWillReceiveProps
@@ -65,8 +65,8 @@
     (render-state [this {:keys [draw-chan]}]
       (dom/div nil
         (om/build editor data)
-        (apply dom/div #js {:className "params-picker-container"}
-          (om/build-all params-picker (:ifs-params data)))
+        (dom/div #js {:className "params-picker-container"}
+          (om/build params-picker (nth ifs-params (:idx selection))))
         (om/build point-cloud draw-chan)))))
 
 (om/root de-jong-app app-state
