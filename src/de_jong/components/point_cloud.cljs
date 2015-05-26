@@ -49,5 +49,5 @@
         (om/update-state! owner (fn [prev] (merge prev { :renderer renderer })))))
     om/IRender
     (render [_]
-      (dom/div #js {:id "point-cloud"}
+      (dom/div #js {:className "point-cloud"}
         (dom/canvas #js { :ref "canvas" })))))
