@@ -4,6 +4,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [chan >! close! timeout put!]]
+            [de-jong.util :refer [animation-frame]]
             [de-jong.components.point-cloud :refer [full-screen-point-cloud]]
             [de-jong.components.editor :refer [editor]]
             [de-jong.components.params-picker :refer [params-picker]]
@@ -19,13 +20,6 @@
                                         [-2.850 2.793 -2.697 1.128]
                                         [1.5    2.5   0.731  2.5]]
                            :selection {:idx 0} }))
-
-(defn animation-frame
-  ([]
-    (animation-frame (chan)))
-  ([comm]
-    (put! comm (.requestAnimationFrame js/window (fn [_] (animation-frame comm))))
-    comm))
 
 (defn calculator-channel [params-chan initial-seq]
   (let [throttler    (animation-frame)
