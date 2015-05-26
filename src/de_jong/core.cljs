@@ -4,7 +4,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [chan >! close! timeout put!]]
-            [de-jong.components.point-cloud :refer [point-cloud]]
+            [de-jong.components.point-cloud :refer [full-screen-point-cloud]]
             [de-jong.components.editor :refer [editor]]
             [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.points-calculator :refer [points-to-draw
@@ -67,7 +67,7 @@
         (om/build editor data)
         (dom/div #js {:className "params-picker-container"}
           (om/build params-picker (nth ifs-params (:idx selection))))
-        (om/build point-cloud draw-chan)))))
+        (om/build full-screen-point-cloud draw-chan)))))
 
 (om/root de-jong-app app-state
   {:target (. js/document (getElementById "application"))})

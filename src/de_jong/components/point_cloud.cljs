@@ -5,14 +5,6 @@
             [cljs.core.async :refer [<! chan put!]]
             [cljsjs.three]))
 
-(defn handle-resize [owner _]
-  (let [{:keys [renderer camera]} (om/get-state owner)
-        w (.-innerWidth js/window)
-        h (.-innerHeight js/window)]
-    (set! (.-aspect camera) (/ w h))
-    (.updateProjectionMatrix camera)
-    (.setSize renderer w h)))
-
 (defn draw! [owner draw-chan]
   (go (while true
     (let [points (<! draw-chan)]
@@ -22,13 +14,11 @@
           (.addAttribute geometry "position" vertex-attr)
           (.render renderer scene camera)))))))
 
-(defn point-cloud [draw-chan owner]
+(defn point-cloud [{ :keys [draw-chan width height] } owner]
   (reify
     om/IInitState
     (init-state [_]
-      (let [width    (.-innerWidth js/window)
-            height   (.-innerHeight js/window)
-            geometry (js/THREE.BufferGeometry.)
+      (let [geometry (js/THREE.BufferGeometry.)
             scene    (js/THREE.Scene.)
             camera   (js/THREE.PerspectiveCamera. 45 (/ width height) 0.1 1000)
             material (js/THREE.PointCloudMaterial. #js { :size 0.02 :color 0x00cc00 })
@@ -39,15 +29,41 @@
           :scene scene
           :camera camera
           :cloud cloud }))
+    om/IWillReceiveProps
+    (will-receive-props [this { :keys [width height] }]
+      (let [{ :keys [renderer camera] } (om/get-state owner)]
+        (set! (.-aspect camera) (/ width height))
+        (.updateProjectionMatrix camera)
+        (.setSize renderer width height)))
     om/IDidMount
     (did-mount [_]
       (let [renderer (js/THREE.WebGLRenderer. #js { :canvas (om/get-node owner "canvas")
                                                     :alpha true })]
-        (.setSize renderer (.-innerWidth js/window) (.-innerHeight js/window))
-        (.addEventListener js/window "resize" (partial handle-resize owner))
+        (.setSize renderer width height)
         (draw! owner draw-chan)
         (om/update-state! owner (fn [prev] (merge prev { :renderer renderer })))))
     om/IRender
     (render [_]
       (dom/div #js {:className "point-cloud"}
         (dom/canvas #js { :ref "canvas" })))))
+
+(defn screen-dimensions []
+  { :width  (.-innerWidth js/window)
+    :height (.-innerHeight js/window) })
+
+(defn handle-window-resize [owner _]
+  (om/update-state! owner #(screen-dimensions)))
+
+(defn full-screen-point-cloud [draw-chan owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      (screen-dimensions))
+    om/IDidMount
+    (did-mount [_]
+      (.addEventListener js/window "resize" (partial handle-window-resize owner)))
+    om/IRenderState
+    (render-state [this { :keys [width height] } ]
+      (om/build point-cloud { :draw-chan draw-chan
+                              :width width
+                              :height height }))))
