@@ -14,14 +14,15 @@
           (.addAttribute geometry "position" vertex-attr)
           (.render renderer scene camera)))))))
 
-(defn point-cloud [{ :keys [draw-chan width height] } owner]
+(defn point-cloud [{ :keys [draw-chan width height point-size]
+                     :or { point-size 0.02 } } owner]
   (reify
     om/IInitState
     (init-state [_]
       (let [geometry (js/THREE.BufferGeometry.)
             scene    (js/THREE.Scene.)
             camera   (js/THREE.PerspectiveCamera. 45 (/ width height) 0.1 1000)
-            material (js/THREE.PointCloudMaterial. #js { :size 0.02 :color 0x00cc00 })
+            material (js/THREE.PointCloudMaterial. #js { :size point-size :color 0x00cc00 })
             cloud    (js/THREE.PointCloud. geometry material)]
         (.add scene cloud)
         (set! (.-z (.-position camera)) 8)

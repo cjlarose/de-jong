@@ -30,7 +30,7 @@
     (render-state [this { :keys [draw-chan] }]
       (dom/li #js {:className (str "preview" (if selected " selected"))}
         (dom/a #js {:href "#" :onClick (fn [e] (.preventDefault e) (onSelect))}
-          (om/build point-cloud { :draw-chan draw-chan :width 150 :height 100 }))))))
+          (om/build point-cloud { :draw-chan draw-chan :point-size 0.05 :width 150 :height 100 }))))))
 
 (defn preview-params [selection idx params]
   { :onSelect (fn [] (om/transact! selection #(assoc % :idx idx)))
