@@ -6,7 +6,7 @@ body {
     padding: 0;
 }
 
-#point-cloud canvas {
+.point-cloud canvas {
     display: block;
 }
 
