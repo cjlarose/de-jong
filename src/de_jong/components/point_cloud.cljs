@@ -21,8 +21,14 @@
   "uniform float deJongParams[4];
    void main() {
      gl_PointSize = 1.0;
-     float x = sin(deJongParams[0] * position.y) - cos(deJongParams[1] * position.x);
-     float y = sin(deJongParams[2] * position.x) - cos(deJongParams[3] * position.y);
+
+     float x = position.x;
+     float y = position.y;
+     for (int i = 0; i < 5; i++) {
+       x = sin(deJongParams[0] * y) - cos(deJongParams[1] * x);
+       y = sin(deJongParams[2] * x) - cos(deJongParams[3] * y);
+     }
+
      vec4 newPos = vec4(x, y, 0, 1.0);
      gl_Position = projectionMatrix * modelViewMatrix * newPos;
    }")
