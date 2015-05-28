@@ -2,17 +2,7 @@
   (:require [om.core :as om]
             [om.dom :as dom]
             [cljs.core.async :refer [chan put!]]
-            [de-jong.components.point-cloud :refer [point-cloud]]
-            [de-jong.points-calculator :refer [de-jong-ifs
-                                               random-vertex-array
-                                               vertices-apply]]))
-
-(defn draw-points! [draw-chan params]
-  (let [points-to-draw (js/Math.pow 2 9)
-        random-array (random-vertex-array points-to-draw -2.0 2.0)
-        my-ifs       (apply de-jong-ifs params)
-        points-array (vertices-apply my-ifs random-array)]
-    (put! draw-chan points-array)))
+            [de-jong.components.point-cloud :refer [point-cloud]]))
 
 (defn preview [{:keys [params onSelect selected]} owner]
   (reify
@@ -21,11 +11,11 @@
       { :draw-chan (chan) })
     om/IDidMount
     (did-mount [_]
-      (draw-points! (om/get-state owner :draw-chan) params))
+      (put! (om/get-state owner :draw-chan) params))
     om/IWillReceiveProps
     (will-receive-props [this next-props]
       (if-not (= params (:params next-props))
-        (draw-points! (om/get-state owner :draw-chan) (:params next-props))))
+        (put! (om/get-state owner :draw-chan) (:params next-props))))
     om/IRenderState
     (render-state [this { :keys [draw-chan] }]
       (dom/li #js {:className (str "preview" (if selected " selected"))}
