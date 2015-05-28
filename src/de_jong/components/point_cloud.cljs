@@ -5,19 +5,7 @@
             [cljs.core.async :refer [<! chan put!]]
             [cljsjs.three]
             [de-jong.points-calculator :refer [points-to-draw
-                                               de-jong-ifs
-                                               random-vertex-array
-                                               vertices-apply]]
-            ))
-
-; (defn draw! [owner draw-chan]
-;   (go (while true
-;     (let [points (<! draw-chan)]
-;       (if-not (nil? points)
-;         (let [vertex-attr (js/THREE.BufferAttribute. points 3)
-;               {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
-;           (.addAttribute geometry "position" vertex-attr)
-;           (.render renderer scene camera)))))))
+                                               random-vertex-array]]))
 
 (def points (random-vertex-array points-to-draw -2.0 2.0))
 
@@ -25,11 +13,8 @@
   (go (while true
     (let [params (<! draw-chan)]
       (if-not (nil? params)
-        (let [
-              vertex-attr (js/THREE.BufferAttribute. points 3)
+        (let [vertex-attr (js/THREE.BufferAttribute. points 3)
               {:keys [geometry renderer scene camera cloud uniforms]} (om/get-state owner)]
-          ; (println uniforms)
-          ;(println params)
           (set! (.-value (.-deJongParams uniforms)) (clj->js params))
           (.addAttribute geometry "position" vertex-attr)
           (.render renderer scene camera)))))))
