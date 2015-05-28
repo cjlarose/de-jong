@@ -3,20 +3,41 @@
   (:require [om.core :as om]
             [om.dom :as dom]
             [cljs.core.async :refer [<! chan put!]]
-            [cljsjs.three]))
+            [cljsjs.three]
+            [de-jong.points-calculator :refer [points-to-draw
+                                               de-jong-ifs
+                                               random-vertex-array
+                                               vertices-apply]]
+            ))
+
+; (defn draw! [owner draw-chan]
+;   (go (while true
+;     (let [points (<! draw-chan)]
+;       (if-not (nil? points)
+;         (let [vertex-attr (js/THREE.BufferAttribute. points 3)
+;               {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
+;           (.addAttribute geometry "position" vertex-attr)
+;           (.render renderer scene camera)))))))
+
+(def points (random-vertex-array points-to-draw -2.0 2.0))
 
 (defn draw! [owner draw-chan]
   (go (while true
-    (let [points (<! draw-chan)]
-      (if-not (nil? points)
-        (let [vertex-attr (js/THREE.BufferAttribute. points 3)
-              {:keys [geometry renderer scene camera cloud]} (om/get-state owner)]
+    (let [params (<! draw-chan)]
+      (if-not (nil? params)
+        (let [
+              vertex-attr (js/THREE.BufferAttribute. points 3)
+              {:keys [geometry renderer scene camera cloud uniforms]} (om/get-state owner)]
+          ; (println uniforms)
+          ;(println params)
+          (set! (.-value (.-deJongParams uniforms)) (clj->js params))
           (.addAttribute geometry "position" vertex-attr)
           (.render renderer scene camera)))))))
 
 (def vertex-shader
-  "void main() {
-     gl_PointSize = 1.0;
+  "uniform float deJongParams[4];
+   void main() {
+     gl_PointSize = deJongParams[0];
      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
    }")
 
@@ -33,7 +54,9 @@
       (let [geometry (js/THREE.BufferGeometry.)
             scene    (js/THREE.Scene.)
             camera   (js/THREE.PerspectiveCamera. 45 (/ width height) 0.1 1000)
-            material (js/THREE.ShaderMaterial. #js { :vertexShader vertex-shader
+            uniforms #js { :deJongParams #js { :type "fv1" :value #js [0 0 0 0] } }
+            material (js/THREE.ShaderMaterial. #js { :uniforms uniforms
+                                                     :vertexShader vertex-shader
                                                      :fragmentShader fragment-shader })
             cloud    (js/THREE.PointCloud. geometry material)]
         (.add scene cloud)
@@ -41,7 +64,8 @@
         { :geometry geometry
           :scene scene
           :camera camera
-          :cloud cloud }))
+          :cloud cloud
+          :uniforms uniforms }))
     om/IWillReceiveProps
     (will-receive-props [this { :keys [width height] }]
       (let [{ :keys [renderer camera] } (om/get-state owner)]
