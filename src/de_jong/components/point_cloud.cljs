@@ -13,10 +13,8 @@
   (go (while true
     (let [params (<! draw-chan)]
       (if-not (nil? params)
-        (let [vertex-attr (js/THREE.BufferAttribute. points 3)
-              {:keys [geometry renderer scene camera cloud uniforms]} (om/get-state owner)]
+        (let [{:keys [renderer scene camera uniforms]} (om/get-state owner)]
           (set! (.-value (.-deJongParams uniforms)) (clj->js params))
-          (.addAttribute geometry "position" vertex-attr)
           (.render renderer scene camera)))))))
 
 (def vertex-shader
@@ -46,13 +44,13 @@
             material (js/THREE.ShaderMaterial. #js { :uniforms uniforms
                                                      :vertexShader vertex-shader
                                                      :fragmentShader fragment-shader })
-            cloud    (js/THREE.PointCloud. geometry material)]
+            cloud    (js/THREE.PointCloud. geometry material)
+            vertex-attr (js/THREE.BufferAttribute. points 3)]
         (.add scene cloud)
         (set! (.-z (.-position camera)) 8)
-        { :geometry geometry
-          :scene scene
+        (.addAttribute geometry "position" vertex-attr)
+        { :scene scene
           :camera camera
-          :cloud cloud
           :uniforms uniforms }))
     om/IWillReceiveProps
     (will-receive-props [this { :keys [width height] }]
