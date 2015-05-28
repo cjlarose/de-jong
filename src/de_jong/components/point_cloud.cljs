@@ -37,8 +37,11 @@
 (def vertex-shader
   "uniform float deJongParams[4];
    void main() {
-     gl_PointSize = deJongParams[0];
-     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+     gl_PointSize = 1.0;
+     float x = sin(deJongParams[0] * position.y) - cos(deJongParams[1] * position.x);
+     float y = sin(deJongParams[2] * position.x) - cos(deJongParams[3] * position.y);
+     vec4 newPos = vec4(x, y, 0, 1.0);
+     gl_Position = projectionMatrix * modelViewMatrix * newPos;
    }")
 
 (def fragment-shader
