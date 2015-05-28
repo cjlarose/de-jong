@@ -35,7 +35,7 @@
 
 (def fragment-shader
   "void main() {
-     gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+     gl_FragColor = vec4(0.0, 1.0, 0.0, 0.5);
    }")
 
 (defn point-cloud [{ :keys [draw-chan width height point-size]
@@ -47,7 +47,11 @@
             scene    (js/THREE.Scene.)
             camera   (js/THREE.PerspectiveCamera. 45 (/ width height) 0.1 1000)
             uniforms #js { :deJongParams #js { :type "fv1" :value #js [0 0 0 0] } }
-            material (js/THREE.ShaderMaterial. #js { :uniforms uniforms
+            material (js/THREE.ShaderMaterial. #js { :transparent true
+                                                     ; :opacity 0.75
+                                                     ; :blending js/THREE.AdditiveBlending
+                                                     ; :blending js/THREE.AdditiveBlending
+                                                     :uniforms uniforms
                                                      :vertexShader vertex-shader
                                                      :fragmentShader fragment-shader })
             cloud    (js/THREE.PointCloud. geometry material)

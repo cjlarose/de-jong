@@ -1,6 +1,6 @@
 (ns de-jong.points-calculator)
 
-(def points-to-draw (js/Math.pow 2 13))
+(def points-to-draw (js/Math.pow 2 18))
 
 (defn in-range [x]
   (and (>= x (- js/Math.PI)) (<= x js/Math.PI)))
