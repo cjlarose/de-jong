@@ -1,27 +1,16 @@
 (ns de-jong.components.editor
   (:require [om.core :as om]
             [om.dom :as dom]
-            [cljs.core.async :refer [chan put!]]
             [de-jong.components.point-cloud :refer [point-cloud]]))
 
 (defn preview [{:keys [params onSelect selected]} owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      { :draw-chan (chan) })
-    om/IDidMount
-    (did-mount [_]
-      (put! (om/get-state owner :draw-chan) params))
-    om/IWillReceiveProps
-    (will-receive-props [this next-props]
-      (if-not (= params (:params next-props))
-        (put! (om/get-state owner :draw-chan) (:params next-props))))
-    om/IRenderState
-    (render-state [this { :keys [draw-chan] }]
+    om/IRender
+    (render [_]
       (dom/li #js {:className (str "preview" (if selected " selected"))}
         (dom/a #js {:href "#" :onClick (fn [e] (.preventDefault e) (onSelect))}
           (om/build point-cloud { :num-points (js/Math.pow 2 13)
-                                  :draw-chan draw-chan
+                                  :de-jong-params params
                                   :point-size 0.5
                                   :width 150
                                   :height 100 }))))))
