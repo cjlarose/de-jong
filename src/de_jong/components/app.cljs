@@ -43,4 +43,4 @@
         (om/build editor data)
         (dom/div #js {:className "params-picker-container"}
           (om/build params-picker (nth ifs-params (:idx selection))))
-        (om/build full-screen-point-cloud [draw-chan (js/Math.pow 2 13)])))))
+        (om/build full-screen-point-cloud [draw-chan (js/Math.pow 2 18)])))))
