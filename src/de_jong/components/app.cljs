@@ -33,13 +33,15 @@
     draw-chan))
 
 (def make-transition (comp cycle (partial transition-params 120)))
+;;(def make-transition (repeat (first transition-params)))
 
 (defn app [{:keys [selection ifs-params] :as data} owner]
   (reify
     om/IInitState
     (init-state [_]
       (let [params-chan (chan)
-            initial-seq (make-transition ifs-params)]
+            initial-seq (repeat (first ifs-params))]
+            ;;initial-seq (make-transition ifs-params)]
         {:params-chan params-chan
          :draw-chan   (calculator-channel params-chan initial-seq)}))
     om/IWillReceiveProps
@@ -47,7 +49,8 @@
       (let [old-ifs-params (om/get-props owner :ifs-params)]
         (if-not (= old-ifs-params ifs-params)
           (let [params-chan (om/get-state owner :params-chan)]
-            (put! params-chan (make-transition ifs-params))))))
+            (put! params-chan (repeat (first ifs-params)))))))
+            ;;(put! params-chan (make-transition ifs-params))))))
     om/IRenderState
     (render-state [this {:keys [draw-chan]}]
       (dom/div nil
