@@ -27,6 +27,7 @@
             (reset! params-seq v)
             (reset! points-array random-array)))
         (let [ifs (apply de-jong-ifs (first @params-seq))]
+          (reset! points-array random-array)
           (swap! points-array (partial vertices-apply ifs))
           (swap! params-seq rest)))))
     draw-chan))
