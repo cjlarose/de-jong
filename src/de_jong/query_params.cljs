@@ -5,20 +5,26 @@
 (defn query-params [query-string]
   (map #(split % #"=") (split (subs query-string 1) #"&")))
 
+(defn- encode-app-state [app-state]
+  (->> app-state
+       (clj->js)
+       (.stringify js/JSON)
+       (js/btoa)))
+
+(defn- decode-app-state [b64]
+  (js->clj (.parse js/JSON (js/atob b64)) :keywordize-keys true))
+
 (defn extract-app-state [query-string]
-  (let [js-state (->> query-string
-                      (query-params)
-                      (filter (fn [[k v]] (and (= k "s") v)))
-                      (first)
-                      (second)
-                      (js/atob)
-                      (.parse js/JSON))
-        clj-state (js->clj js-state :keywordize-keys true)]
-    clj-state))
+  (->> query-string
+       (query-params)
+       (filter (fn [[k v]] (and (= k "s") v)))
+       (first)
+       (second)
+       (decode-app-state)))
 
 (defn- state-url [app-state]
   (let [l (.-location js/window)
-        encoded-state (js/btoa (.stringify js/JSON (clj->js app-state)))
+        encoded-state (encode-app-state app-state)
         query-string (str "?s=" encoded-state)]
     (str (.-protocol l) "//" (.-host l) (.-pathname l) query-string)))
 
