@@ -24,6 +24,17 @@ header {
     z-index: 2;
 }
 
+.toggle-editor {
+    color: #666;
+    font-size: 24px;
+    padding: 6px 10px;
+    display: inline-block;
+}
+
+.toggle-editor.active {
+    color: #000;
+}
+
 .editor {
     margin-top: 0;
     margin-left: 0;

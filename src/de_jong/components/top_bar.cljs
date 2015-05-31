@@ -2,9 +2,13 @@
   (:require [om.core :as om]
             [om.dom :as dom]))
 
+(defn fa-icon [icon]
+  (dom/i #js { :className (str "fa fa-" icon) } ))
+
 (defn editor-link [app-state]
   (dom/a 
     #js { :href "#"
+          :className (str "toggle-editor" (if (:show-editor app-state) " active"))
           :onClick (fn [e]
                      (.preventDefault e)
                      (om/transact!
@@ -12,7 +16,7 @@
                        (fn [s] (-> s
                                   (assoc :show-editor (not (:show-editor s)))
                                   (assoc :selection { :idx nil } ))))) }
-    (if (:show-editor app-state) "Hide Edtior" "Show Editor")))
+    (fa-icon "pencil")))
 
 (defn top-bar [app-state owner]
   (reify
