@@ -28,11 +28,11 @@
     :selected (= idx (:idx selection))
     :params   params })
 
-(defn editor [{:keys [ifs-params selection]} owner]
+(defn editor [{:keys [ifs-params selection show-editor]} owner]
   (reify
     om/IRender
     (render [this]
-      (apply dom/ul #js {:className "editor"}
+      (apply dom/ul #js {:className (str "editor" (if show-editor "" " hidden"))}
         (om/build-all
           frame-editor
           (map-indexed (partial frame-editor-params selection) ifs-params))))))

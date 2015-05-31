@@ -2,6 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [de-jong.components.point-cloud :refer [full-screen-point-cloud]]
+            [de-jong.components.top-bar :refer [top-bar]]
             [de-jong.components.editor :refer [editor]]
             [de-jong.transition :refer [transition-params]]))
 
@@ -31,5 +32,7 @@
     om/IRenderState
     (render-state [this {:keys [frames frame-number]}]
       (dom/div nil
-        (om/build editor data)
+        (dom/header nil
+          (om/build top-bar data)
+          (om/build editor data))
         (om/build full-screen-point-cloud [(nth frames frame-number) (js/Math.pow 2 18)])))))

@@ -12,10 +12,11 @@
 (enable-console-print!)
 
 (def default-state
-  { :ifs-params [[-2.950 1     -1     1]
-                 [-2.850 2.793 -2.697 1.128]
-                 [1.5    2.5   0.731  2.5]]
-    :selection {:idx 0} })
+  { :ifs-params  [[-2.950 1     -1     1]
+                  [-2.850 2.793 -2.697 1.128]
+                  [1.5    2.5   0.731  2.5]]
+    :selection   {:idx 0}
+    :show-editor true })
 
 (defonce app-state
   (let [qs (.-search (.-location js/window))

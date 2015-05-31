@@ -10,12 +10,32 @@ body {
     display: block;
 }
 
-.editor {
-    margin: 0;
-    padding: 0;
+header {
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.top-bar {
+    color: #fff;
+    background-color: #f9f9f9;
+    position: relative;
+    z-index: 2;
+}
+
+.editor {
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding: 0;
+    transition: margin-top 0.5s ease-in;
+    z-index: 1;
+}
+
+.editor.hidden {
+    margin-top: -200px;
 }
 
 .frame-editor {
