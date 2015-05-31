@@ -5,20 +5,29 @@
 (defn query-params [query-string]
   (map #(split % #"=") (split (subs query-string 1) #"&")))
 
+(defn- encode-app-state [app-state]
+  (->> app-state
+       (clj->js)
+       (.stringify js/JSON)
+       (js/btoa)))
+
+(defn- decode-app-state [b64]
+  (if (nil? b64)
+    nil
+    (js->clj (.parse js/JSON (js/atob b64)) :keywordize-keys true)))
+
 (defn extract-app-state [query-string]
-  (let [js-state (->> query-string
-                      (query-params)
-                      (filter (fn [[k v]] (and (= k "s") v)))
-                      (first)
-                      (second)
-                      (js/decodeURIComponent)
-                      (.parse js/JSON))
-        clj-state (js->clj js-state :keywordize-keys true)]
-    clj-state))
+  (->> query-string
+       (query-params)
+       (filter (fn [[k v]] (and (= k "s") v)))
+       (first)
+       (second)
+       (decode-app-state)))
 
 (defn- state-url [app-state]
   (let [l (.-location js/window)
-        query-string (str "?s=" (.stringify js/JSON (clj->js app-state)))]
+        encoded-state (encode-app-state app-state)
+        query-string (str "?s=" encoded-state)]
     (str (.-protocol l) "//" (.-host l) (.-pathname l) query-string)))
 
 (defn update-history!
@@ -30,12 +39,10 @@
         (.call f js/history (clj->js app-state) "" url))))
 
 (defn popstate-changes []
-  (let [comm (chan)]
-    (.addEventListener
-      js/window
-      "popstate"
-      (fn [e]
-        (let [state (js->clj (.-state e) :keywordize-keys true)
-              msg   { :state state }]
-          (put! comm msg))))
+  (let [comm (chan)
+        handle-pop (fn [e]
+                     (let [state (js->clj (.-state e) :keywordize-keys true)
+                           msg   { :state state }]
+                       (put! comm msg)))]
+    (.addEventListener js/window "popstate" handle-pop)
     comm))
