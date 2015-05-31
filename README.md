@@ -8,7 +8,7 @@ The formula is quite simple, but plots of the de Jong Attractor can be quite [be
 
 It is implemented in ClojureScript with [Om][om] and [THREE.js][three], using custom GLSL vertex shaders for the calculation of points.
 
-[demo]: http://cjlarose.com/de-jong-cljs/
+[demo]: http://cjlarose.com/de-jong
 [bourke]: http://paulbourke.net/fractals/peterdejong/
 [om]: https://github.com/omcljs/om
 [three]: http://threejs.org/
