@@ -11,14 +11,15 @@
                       (filter (fn [[k v]] (and (= k "s") v)))
                       (first)
                       (second)
-                      (js/decodeURIComponent)
+                      (js/atob)
                       (.parse js/JSON))
         clj-state (js->clj js-state :keywordize-keys true)]
     clj-state))
 
 (defn- state-url [app-state]
   (let [l (.-location js/window)
-        query-string (str "?s=" (.stringify js/JSON (clj->js app-state)))]
+        encoded-state (js/btoa (.stringify js/JSON (clj->js app-state)))
+        query-string (str "?s=" encoded-state)]
     (str (.-protocol l) "//" (.-host l) (.-pathname l) query-string)))
 
 (defn update-history!
