@@ -12,7 +12,7 @@
 
 (def make-transition (comp vec (partial transition-params 120)))
 
-(defn app [{:keys [selection ifs-params] :as data} owner]
+(defn app [{:keys [ifs-params] :as data} owner]
   (reify
     om/IInitState
     (init-state [_]

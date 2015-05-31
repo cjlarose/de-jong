@@ -46,7 +46,7 @@ header {
 }
 
 .editor.hidden {
-    margin-top: -200px;
+    margin-top: -370px;
 }
 
 .frame-editor {
@@ -54,23 +54,24 @@ header {
     position: relative;
 }
 
-.frame-editor.selected a {
-    border: 1px solid #fff;
+.frame-editor:hover {
+    background: #000;
 }
 
 .preview a {
     display: block;
     color: #fff;
-    border: 1px solid #999;
-    margin: 2px;
 }
 
 .params-picker {
     padding: 20px;
     color: #fff;
-    position: absolute;
-    top: 170px;
-    left: 0;
+    opacity: 0.00;
+    transition: opacity 0.25s ease-in;
+}
+
+.frame-editor:hover .params-picker {
+    opacity: 1.0;
 }
 
 .params-picker ul {
@@ -88,6 +89,6 @@ header {
 }
 
 input[type=range] {
-    width: 150px;
+    width: 140px;
     margin: 0 5px;
 }

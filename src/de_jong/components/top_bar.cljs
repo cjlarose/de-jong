@@ -11,11 +11,7 @@
           :className (str "toggle-editor" (if (:show-editor app-state) " active"))
           :onClick (fn [e]
                      (.preventDefault e)
-                     (om/transact!
-                       app-state
-                       (fn [s] (-> s
-                                  (assoc :show-editor (not (:show-editor s)))
-                                  (assoc :selection { :idx nil } ))))) }
+                     (om/transact! app-state :show-editor not)) }
     (fa-icon "pencil")))
 
 (defn top-bar [app-state owner]

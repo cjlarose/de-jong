@@ -4,35 +4,28 @@
             [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.components.point-cloud :refer [point-cloud]]))
 
-(defn preview [params onSelect]
-  (dom/div #js {:className "preview"}
-    (dom/a #js {:href "#" :onClick (fn [e] (.preventDefault e) (onSelect))}
+(defn preview [params]
+  (dom/div #js { :className "preview" }
+    (dom/a #js { :href "#" }
       (om/build point-cloud { :num-points (js/Math.pow 2 13)
                               :de-jong-params params
                               :point-size 0.5
                               :width 250
                               :height 166 }))))
 
-(defn frame-editor [{:keys [params onSelect selected]} owner]
+(defn frame-editor [params owner]
   (reify
     om/IRender
     (render [_]
-      (dom/li #js {:className (str "frame-editor" (if selected " selected"))}
-        (preview params onSelect)
-        (if selected (om/build params-picker params)) 
-        ))))
+      (dom/li #js { :className "frame-editor" }
+        (preview params)
+        (om/build params-picker params)))))
 
-(defn frame-editor-params [selection idx params]
-  { :onSelect (fn [] (let [new-idx (if (= (:idx selection) idx) nil idx)]
-                       (om/transact! selection (constantly {:idx new-idx}))))
-    :selected (= idx (:idx selection))
-    :params   params })
-
-(defn editor [{:keys [ifs-params selection show-editor]} owner]
+(defn editor [{:keys [ifs-params show-editor]} owner]
   (reify
     om/IRender
     (render [this]
       (apply dom/ul #js {:className (str "editor" (if show-editor "" " hidden"))}
         (om/build-all
           frame-editor
-          (map-indexed (partial frame-editor-params selection) ifs-params))))))
+          ifs-params)))))
