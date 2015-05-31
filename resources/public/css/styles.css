@@ -52,10 +52,12 @@ header {
 .frame-editor {
     display: inline-block;
     position: relative;
+    transition: background-color 0.25s ease-in;
+    background-color: hsla(0, 0%, 0%, 0);
 }
 
 .frame-editor:hover {
-    background: #000;
+    background-color: hsla(0, 0%, 0%, 0.5);
 }
 
 .preview a {
