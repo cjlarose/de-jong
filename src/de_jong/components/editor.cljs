@@ -23,7 +23,8 @@
         ))))
 
 (defn frame-editor-params [selection idx params]
-  { :onSelect (fn [] (println idx) (om/transact! selection #(assoc % :idx idx)))
+  { :onSelect (fn [] (let [new-idx (if (= (:idx selection) idx) nil idx)]
+                       (om/transact! selection (constantly {:idx new-idx}))))
     :selected (= idx (:idx selection))
     :params   params })
 
