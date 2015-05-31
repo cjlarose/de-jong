@@ -27,15 +27,23 @@ header {
     box-shadow: 0px 5px 5px hsl(0, 0%, 0%);
 }
 
-.toggle-editor {
-    color: #666;
+.top-bar-link {
+    color: #000;
     font-size: 24px;
     padding: 6px 10px;
     display: inline-block;
 }
 
+.toggle-editor {
+    color: #666;
+}
+
 .toggle-editor.active {
     color: #000;
+}
+
+.github-link {
+    float: right;
 }
 
 .editor {

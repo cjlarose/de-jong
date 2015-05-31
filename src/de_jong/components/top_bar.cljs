@@ -8,7 +8,7 @@
 (defn editor-link [app-state]
   (dom/a 
     #js { :href "#"
-          :className (str "toggle-editor" (if (:show-editor app-state) " active"))
+          :className (str "top-bar-link toggle-editor" (if (:show-editor app-state) " active"))
           :onClick (fn [e]
                      (.preventDefault e)
                      (om/transact! app-state :show-editor not)) }
@@ -18,4 +18,8 @@
   (reify
     om/IRender
     (render [_]
-      (dom/div #js {:className "top-bar"} (editor-link app-state)))))
+      (dom/div #js {:className "top-bar"}
+        (editor-link app-state)
+        (dom/a #js { :className "top-bar-link github-link"
+                     :href "https://github.com/cjlarose/de-jong" }
+          (fa-icon "github-square"))))))
