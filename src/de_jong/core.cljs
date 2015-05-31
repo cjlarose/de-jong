@@ -1,7 +1,7 @@
 (ns ^:figwheel-always de-jong.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.browser.repl :as repl]
-            [cljs.core.async :refer [chan <!]]
+            [cljs.core.async :refer [chan <! put! timeout sliding-buffer]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [de-jong.query-params :refer [extract-app-state
@@ -37,8 +37,23 @@
     (render [this]
       (om/build app app-state))))
 
+(defn throttle
+  "https://gist.github.com/swannodette/5886048"
+  [c ms]
+  (let [c' (chan)]
+    (go (while true
+      (>! c' (<! c))
+      (<! (timeout ms))))
+    c'))
+
+(def tx-chan (chan (sliding-buffer 1)))
+
+(let [c (throttle tx-chan 500)]
+  (go (while true
+    (let [[{ :keys [new-state tag] } _] (<! c)]
+           (if-not (= tag :popped)
+             (update-history! new-state))))))
+
 (om/root root app-state
   { :target (. js/document (getElementById "application"))
-    :tx-listen (fn [{ :keys [new-state tag] } _]
-                 (if-not (= tag :popped)
-                   (update-history! new-state))) })
+    :tx-listen (fn [a b] (put! tx-chan [a b])) })
