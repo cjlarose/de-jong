@@ -6,12 +6,11 @@
 
 (defn preview [params]
   (dom/div #js { :className "preview" }
-    (dom/a #js { :href "#" }
-      (om/build point-cloud { :num-points (js/Math.pow 2 13)
-                              :de-jong-params params
-                              :point-size 0.5
-                              :width 250
-                              :height 166 }))))
+    (om/build point-cloud { :num-points (js/Math.pow 2 13)
+                            :de-jong-params params
+                            :point-size 0.5
+                            :width 250
+                            :height 166 })))
 
 (defn frame-editor [params owner]
   (reify
