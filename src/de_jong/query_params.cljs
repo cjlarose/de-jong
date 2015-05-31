@@ -39,12 +39,10 @@
         (.call f js/history (clj->js app-state) "" url))))
 
 (defn popstate-changes []
-  (let [comm (chan)]
-    (.addEventListener
-      js/window
-      "popstate"
-      (fn [e]
-        (let [state (js->clj (.-state e) :keywordize-keys true)
-              msg   { :state state }]
-          (put! comm msg))))
+  (let [comm (chan)
+        handle-pop (fn [e]
+                     (let [state (js->clj (.-state e) :keywordize-keys true)
+                           msg   { :state state }]
+                       (put! comm msg)))]
+    (.addEventListener js/window "popstate" handle-pop)
     comm))
