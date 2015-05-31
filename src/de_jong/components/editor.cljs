@@ -1,22 +1,30 @@
 (ns de-jong.components.editor
   (:require [om.core :as om]
             [om.dom :as dom]
+            [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.components.point-cloud :refer [point-cloud]]))
 
-(defn preview [{:keys [params onSelect selected]} owner]
+(defn preview [params onSelect]
+  (dom/div #js {:className "preview"}
+    (dom/a #js {:href "#" :onClick (fn [e] (.preventDefault e) (onSelect))}
+      (om/build point-cloud { :num-points (js/Math.pow 2 13)
+                              :de-jong-params params
+                              :point-size 0.5
+                              :width 250
+                              :height 166 }))))
+
+(defn frame-editor [{:keys [params onSelect selected]} owner]
   (reify
     om/IRender
     (render [_]
-      (dom/li #js {:className (str "preview" (if selected " selected"))}
-        (dom/a #js {:href "#" :onClick (fn [e] (.preventDefault e) (onSelect))}
-          (om/build point-cloud { :num-points (js/Math.pow 2 13)
-                                  :de-jong-params params
-                                  :point-size 0.5
-                                  :width 150
-                                  :height 100 }))))))
+      (dom/li #js {:className (str "frame-editor" (if selected " selected"))}
+        (preview params onSelect)
+        (if selected (om/build params-picker params)) 
+        ))))
 
-(defn preview-params [selection idx params]
-  { :onSelect (fn [] (om/transact! selection #(assoc % :idx idx)))
+(defn frame-editor-params [selection idx params]
+  { :onSelect (fn [] (let [new-idx (if (= (:idx selection) idx) nil idx)]
+                       (om/transact! selection (constantly {:idx new-idx}))))
     :selected (= idx (:idx selection))
     :params   params })
 
@@ -24,8 +32,7 @@
   (reify
     om/IRender
     (render [this]
-      (dom/div nil
-        (apply dom/ul #js {:className "editor"}
-          (om/build-all
-            preview
-            (map-indexed (partial preview-params selection) ifs-params)))))))
+      (apply dom/ul #js {:className "editor"}
+        (om/build-all
+          frame-editor
+          (map-indexed (partial frame-editor-params selection) ifs-params))))))
