@@ -10,39 +10,70 @@ body {
     display: block;
 }
 
-.editor {
-    margin: 0;
-    padding: 0;
+header {
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
+    right: 0;
 }
 
-.preview {
+.top-bar {
+    color: #fff;
+    background-color: #f9f9f9;
+    position: relative;
+    z-index: 2;
+}
+
+.toggle-editor {
+    color: #666;
+    font-size: 24px;
+    padding: 6px 10px;
     display: inline-block;
+}
+
+.toggle-editor.active {
+    color: #000;
+}
+
+.editor {
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding: 0;
+    transition: margin-top 0.5s ease;
+    z-index: 1;
+}
+
+.editor.hidden {
+    margin-top: -370px;
+}
+
+.frame-editor {
+    display: inline-block;
+    position: relative;
+    transition: background-color 0.25s ease-in;
+    background-color: hsla(0, 0%, 0%, 0);
+}
+
+.frame-editor:hover {
+    background-color: hsla(0, 0%, 0%, 0.5);
 }
 
 .preview a {
     display: block;
     color: #fff;
-    width: 150px;
-    border: 1px solid #999;
-    margin: 2px;
-}
-
-.preview.selected a {
-    border: 1px solid #fff;
-}
-
-.params-picker-container {
-    position: absolute;
-    top: 150px;
-    left: 20px;
 }
 
 .params-picker {
     padding: 20px;
     color: #fff;
+    opacity: 0.00;
+    transition: opacity 0.25s ease-in;
+}
+
+.frame-editor:hover .params-picker {
+    opacity: 1.0;
 }
 
 .params-picker ul {
@@ -60,6 +91,6 @@ body {
 }
 
 input[type=range] {
-    width: 150px;
+    width: 140px;
     margin: 0 5px;
 }
