@@ -12,7 +12,9 @@
        (js/btoa)))
 
 (defn- decode-app-state [b64]
-  (js->clj (.parse js/JSON (js/atob b64)) :keywordize-keys true))
+  (if (nil? b64)
+    nil
+    (js->clj (.parse js/JSON (js/atob b64)) :keywordize-keys true)))
 
 (defn extract-app-state [query-string]
   (->> query-string
