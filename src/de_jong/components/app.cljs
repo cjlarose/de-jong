@@ -3,7 +3,6 @@
             [om.dom :as dom :include-macros true]
             [de-jong.components.point-cloud :refer [full-screen-point-cloud]]
             [de-jong.components.editor :refer [editor]]
-            [de-jong.components.params-picker :refer [params-picker]]
             [de-jong.transition :refer [transition-params]]))
 
 (defn advance-frame! [owner]
@@ -33,6 +32,4 @@
     (render-state [this {:keys [frames frame-number]}]
       (dom/div nil
         (om/build editor data)
-        (dom/div #js {:className "params-picker-container"}
-          (om/build params-picker (nth ifs-params (:idx selection))))
         (om/build full-screen-point-cloud [(nth frames frame-number) (js/Math.pow 2 18)])))))

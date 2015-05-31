@@ -18,26 +18,15 @@ body {
     left: 0px;
 }
 
-.preview {
-    display: inline-block;
+.frame-editor.selected a {
+    border: 1px solid #fff;
 }
 
 .preview a {
     display: block;
     color: #fff;
-    width: 150px;
     border: 1px solid #999;
     margin: 2px;
-}
-
-.preview.selected a {
-    border: 1px solid #fff;
-}
-
-.params-picker-container {
-    position: absolute;
-    top: 150px;
-    left: 20px;
 }
 
 .params-picker {
