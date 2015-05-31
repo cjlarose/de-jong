@@ -31,8 +31,7 @@
   (reify
     om/IRender
     (render [this]
-      (dom/div nil
-        (apply dom/ul #js {:className "editor"}
-          (om/build-all
-            frame-editor
-            (map-indexed (partial frame-editor-params selection) ifs-params)))))))
+      (apply dom/ul #js {:className "editor"}
+        (om/build-all
+          frame-editor
+          (map-indexed (partial frame-editor-params selection) ifs-params))))))

@@ -18,6 +18,11 @@ body {
     left: 0px;
 }
 
+.frame-editor {
+    display: inline-block;
+    position: relative;
+}
+
 .frame-editor.selected a {
     border: 1px solid #fff;
 }
@@ -32,6 +37,9 @@ body {
 .params-picker {
     padding: 20px;
     color: #fff;
+    position: absolute;
+    top: 170px;
+    left: 0;
 }
 
 .params-picker ul {
