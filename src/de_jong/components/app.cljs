@@ -22,7 +22,10 @@
     (will-receive-props [this {:keys [ifs-params] :as next-props}]
       (let [old-ifs-params (om/get-props owner :ifs-params)]
         (if-not (= old-ifs-params ifs-params)
-          (om/set-state! owner :frames (make-transition ifs-params)))))
+          (let [new-frames    (make-transition ifs-params)
+                current-frame (om/get-state owner :frame-number)]
+            (om/set-state! owner { :frames new-frames
+                                   :frame-number (mod current-frame (count new-frames)) })))))
     om/IDidMount
     (did-mount [_]
       (advance-frame! owner))
