@@ -46,29 +46,70 @@ header {
     float: right;
 }
 
-.editor {
-    margin-top: 0;
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    padding: 0;
-    transition: margin-top 0.5s ease;
+.editor-wrap {
+    position: relative;
+    top: 0;
+    transition: top 0.5s ease;
     z-index: 1;
+    overflow-y: scroll;
 }
 
-.editor.hidden {
-    margin-top: -370px;
+.editor-wrap.hidden {
+    top: -370px;
+}
+
+.editor {
+    margin: 0;
+    padding: 0;
+}
+
+.add-frame-container, .frame-editor {
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+}
+
+.add-frame-container {
+    text-align: center;
+}
+
+.add-frame-container a {
+    width: 250px;
+    display: block;
+    font-size: 50px;
+    color: hsl(120, 100%, 37%);
+    padding: 52px 0 20px 0;
+}
+
+.add-frame-container a:hover {
+    color: hsl(120, 100%, 57%);
 }
 
 .frame-editor {
-    display: inline-block;
-    position: relative;
     transition: background-color 0.25s ease-in;
     background-color: hsla(0, 0%, 0%, 0);
 }
 
 .frame-editor:hover {
     background-color: hsla(0, 0%, 0%, 0.5);
+}
+
+.remove-frame {
+    color: hsla(0, 0%, 60%, 0.5);
+    font-size: 24px;
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    opacity: 0.0;
+    transition: opacity 0.25s ease-in;
+}
+
+.remove-frame:hover {
+    color: hsla(0, 0%, 60%, 1.0);
+}
+
+.frame-editor:hover .remove-frame {
+    opacity: 1.0;
 }
 
 .preview a {
