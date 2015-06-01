@@ -1,9 +1,7 @@
 (ns de-jong.components.top-bar
   (:require [om.core :as om]
-            [om.dom :as dom]))
-
-(defn fa-icon [icon]
-  (dom/i #js { :className (str "fa fa-" icon) } ))
+            [om.dom :as dom]
+            [de-jong.components.fa-icon :refer [fa-icon]]))
 
 (defn editor-link [app-state]
   (dom/a 
