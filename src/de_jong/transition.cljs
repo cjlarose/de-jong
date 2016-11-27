@@ -1,5 +1,4 @@
-(ns de-jong.transition
-  (:require [de-jong.points-calculator :refer [in-range]]))
+(ns de-jong.transition)
 
 (defn lerp [t initial final]
   {:pre [(and (>= t 0) (<= t 1))]}

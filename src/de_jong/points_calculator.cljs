@@ -1,8 +1,5 @@
 (ns de-jong.points-calculator)
 
-(defn in-range [x]
-  (and (>= x (- js/Math.PI)) (<= x js/Math.PI)))
-
 (defn- vertex-array [length]
   (js/Float32Array. (* 3 length)))
 
